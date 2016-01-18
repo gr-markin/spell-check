@@ -5,6 +5,7 @@ module.exports = ({id, text}) ->
   SpellChecker.add("github")
 
   misspelledCharacterRanges = SpellChecker.checkSpelling(text)
+  console.log("initializing spellchecker")
 
   row = 0
   rangeIndex = 0

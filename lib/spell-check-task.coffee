@@ -9,6 +9,7 @@ class SpellCheckTask
 
   constructor: ->
     @id = idCounter++
+    console.log("init spell check task")
 
   terminate: ->
     delete @constructor.callbacksById[@id]

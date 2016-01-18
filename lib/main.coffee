@@ -24,3 +24,16 @@ module.exports =
 
   deactivate: ->
     @disposable.dispose()
+
+  consumeSpellCheckers: (plugins) ->
+    unless plugins instanceof Array
+      plugins = [ plugins ]
+
+    for plugin in plugins
+      #@instance.addLinter(linter)
+      console.log("adding plugin", plugin)
+
+    new Disposable =>
+      for plugin in plugins
+        #@instance.deleteLinter(linter)
+        console.log("removing plugin", plugin)
