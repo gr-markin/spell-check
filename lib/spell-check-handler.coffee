@@ -9,9 +9,12 @@ class SpellCheckerHandler
   deleteSpellChecker: (spellChecker) ->
       @spellCheckers = @spellCheckers.filter (plugin) -> plugin isnt spellChecker
 
-  check: ({id, text}) ->
+  check: (id, text) ->
     # TODO misspelledCharacterRanges = SpellChecker.checkSpelling(text)
-    console.log("initializing spellchecker")
+    console.log("checking spelling", text)
+    for checker in @spellCheckers
+        console.log("results", checker, checker.getMispellingRanges(text))
+    console.log("done checking")
 
     # TODO row = 0
     # TODO rangeIndex = 0

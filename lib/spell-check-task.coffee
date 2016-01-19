@@ -22,7 +22,7 @@ class SpellCheckTask
   start: (text) ->
     #@constructor.task ?= new Task(@handler.check)
     #@constructor.task?.start {@id, text}, @constructor.dispatchMisspellings
-    console.log("test", @handler, @id)
+    console.log("test", @handler, @id, text)
     @constructor.dispatchMisspellings(@handler.check(@id, text))
     console.log("nope")
 
