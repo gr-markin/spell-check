@@ -5,11 +5,12 @@ idCounter = 0
 # terminated once all views are removed.
 module.exports =
 class SpellCheckTask
+  @handler: null
   @callbacksById: {}
 
-  constructor: ->
+  constructor: (handler) ->
     @id = idCounter++
-    console.log("init spell check task")
+    @handler = handler
 
   terminate: ->
     delete @constructor.callbacksById[@id]
@@ -19,8 +20,11 @@ class SpellCheckTask
       @constructor.task = null
 
   start: (text) ->
-    @constructor.task ?= new Task(require.resolve('./spell-check-handler'))
-    @constructor.task?.start {@id, text}, @constructor.dispatchMisspellings
+    #@constructor.task ?= new Task(@handler.check)
+    #@constructor.task?.start {@id, text}, @constructor.dispatchMisspellings
+    console.log("test", @handler, @id)
+    @constructor.dispatchMisspellings(@handler.check(@id, text))
+    console.log("nope")
 
   onDidSpellCheck: (callback) ->
     @constructor.callbacksById[@id] = callback

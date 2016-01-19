@@ -1,33 +1,41 @@
 SpellChecker = require 'spellchecker'
 
-module.exports = ({id, text}) ->
-  SpellChecker.add("GitHub")
-  SpellChecker.add("github")
+class SpellCheckerHandler
+  spellCheckers: []
 
-  misspelledCharacterRanges = SpellChecker.checkSpelling(text)
-  console.log("initializing spellchecker")
+  addSpellChecker: (spellChecker) ->
+      @spellCheckers.push spellChecker
 
-  row = 0
-  rangeIndex = 0
-  characterIndex = 0
-  misspellings = []
-  while characterIndex < text.length and rangeIndex < misspelledCharacterRanges.length
-    lineBreakIndex = text.indexOf('\n', characterIndex)
-    if lineBreakIndex is -1
-      lineBreakIndex = Infinity
+  deleteSpellChecker: (spellChecker) ->
+      @spellCheckers = @spellCheckers.filter (plugin) -> plugin isnt spellChecker
 
-    loop
-      range = misspelledCharacterRanges[rangeIndex]
-      if range and range.start < lineBreakIndex
-        misspellings.push([
-          [row, range.start - characterIndex],
-          [row, range.end - characterIndex]
-        ])
-        rangeIndex++
-      else
-        break
+  check: ({id, text}) ->
+    # TODO misspelledCharacterRanges = SpellChecker.checkSpelling(text)
+    console.log("initializing spellchecker")
 
-    characterIndex = lineBreakIndex + 1
-    row++
+    # TODO row = 0
+    # TODO rangeIndex = 0
+    # TODO characterIndex = 0
+    misspellings = []
+    # TODO while characterIndex < text.length and rangeIndex < misspelledCharacterRanges.length
+    # TODO   lineBreakIndex = text.indexOf('\n', characterIndex)
+    # TODO   if lineBreakIndex is -1
+    # TODO     lineBreakIndex = Infinity
 
-  {id, misspellings}
+    # TODO   loop
+    # TODO     range = misspelledCharacterRanges[rangeIndex]
+    # TODO     if range and range.start < lineBreakIndex
+    # TODO       misspellings.push([
+    # TODO         [row, range.start - characterIndex],
+    # TODO         [row, range.end - characterIndex]
+    # TODO       ])
+    # TODO       rangeIndex++
+    # TODO     else
+    # TODO       break
+
+    # TODO   characterIndex = lineBreakIndex + 1
+    # TODO   row++
+
+    {id, misspellings}
+
+module.exports = SpellCheckerHandler
