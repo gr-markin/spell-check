@@ -27,3 +27,23 @@ for the _Spell Check_ package. Here are some examples: `source.coffee`,
 ## Changing the dictionary
 
 Currently, only the English (US) dictionary is supported. Follow [this issue](https://github.com/atom/spell-check/issues/11) for updates.
+
+## Writing Providers
+
+The `spell-check` allows for additional dictionaries to be used at the same time using Atom's `providedServices` element in the `package.json` file.
+
+    "providedServices": {
+      "spell-check": {
+        "versions": {
+          "1.0.0": "nameOfFunctionToProvideSpellCheck"
+        }
+      }
+    }
+
+The `nameOfFunctionToProvideSpellCheck` function may return either a single object describing the spell-check plugin or an array of them. Each spell-check plugin must implement the following:
+
+* providesChecking(): boolean
+* providesSuggestions(): boolean
+* check(text): { correct: [], incorrect: [] }
+    * `correct` and `incorrect` are both optional. If they are skipped, then it means the plugin does not contribute to the correctness or incorrectness of any word. If they are present but empty, it means there are no correct or incorrect words respectively.
+* suggest(text)
