@@ -12,7 +12,6 @@ class SpellCheckView
 
   constructor: (@editor, handler) ->
     @disposables = new CompositeDisposable
-    console.log("spell-check-view", handler)
     @task = new SpellCheckTask(handler)
     @initializeMarkerLayer()
 

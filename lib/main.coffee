@@ -39,6 +39,6 @@ module.exports =
     for plugin in plugins
       @instance.addSpellChecker(plugin)
 
-    new Disposable =>
-      for plugin in plugins
-        @instance.addSpellChecker(plugin)
+    #new Disposable =>
+    #  for plugin in plugins
+    #    @instance.addSpellChecker(plugin)
