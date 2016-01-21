@@ -2,13 +2,13 @@ SpellChecker = require 'spellchecker'
 multirange = require 'multi-integer-range'
 
 class SpellCheckerHandler
-  spellCheckers: []
+  checkers: []
 
   addSpellChecker: (spellChecker) ->
-    @spellCheckers.push spellChecker
+    @checkers.push spellChecker
 
   removeSpellChecker: (spellChecker) ->
-    @spellCheckers = @spellCheckers.filter (plugin) -> plugin isnt spellChecker
+    @checkers = @checkers.filter (plugin) -> plugin isnt spellChecker
 
   check: (id, text) ->
     # For every registered spellchecker, we need to find out the ranges in the
@@ -19,8 +19,14 @@ class SpellCheckerHandler
     correct = new multirange.MultiRange([])
     incorrects = []
 
-    for checker in @spellCheckers
-      results = checker.checkSpelling(text)
+    for checker in @checkers
+      # We only care if this plugin contributes to checking spelling.
+      if not checker.isEnabled() or not checker.providesSpelling()
+        continue
+
+      # Get the results which includes positive (correct) and negative (incorrect)
+      # ranges.
+      results = checker.check(text)
 
       if results.correct
         for range in results.correct

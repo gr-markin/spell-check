@@ -22,19 +22,26 @@ class SystemChecker
     @reason = "Cannot find dictionary for " + @locale + "."
     console.log @locale, @reason
 
-  getId: ->
-    "spell-check-" + @locale.toLowerCase().replace("_", "-")
-
-  isEnabled: ->
-    @enabled
-
   deactivate: ->
     console.log("deactivating " + @getId())
 
-  checkSpelling: (text) ->
+  getId: -> "spell-check:" + @locale.toLowerCase().replace("_", "-")
+  getName: -> "System Dictionary (" + @locale + ")"
+  getPriority: -> 100 # System level data, has no user input.
+  isEnabled: -> @enabled
+  getStatus: ->
+    if @enabled
+      "Working correctly."
+    else
+      @reason
+
+  providesSpelling: -> true
+  providesSuggestions: -> true
+  providesAdding: -> false # Users shouldn't be adding to the system dictionary.
+
+  check: (text) ->
     { incorrect: @spellchecker.checkSpelling(text) }
 
-  getMispelledRanges: (text) ->
-    @spellchecker.checkSpelling(text)
+  suggest: (word) -> [] # TODO Not implemented yet.
 
 module.exports = SystemChecker

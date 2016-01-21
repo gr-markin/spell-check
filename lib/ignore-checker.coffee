@@ -1,21 +1,22 @@
 class IgnoreChecker
-  enabled: true
-  reason: null
   ignoreRegexes: []
 
   constructor: (ignoreWords) ->
     @setIgnoreWords ignoreWords
 
-  getId: ->
-    "spell-check-ignore"
-
-  isEnabled: ->
-    @enabled
-
   deactivate: ->
     console.log("deactivating " + @getId())
 
-  checkSpelling: (text) ->
+  getId: -> "spell-check:ignore"
+  getName: -> "Ignore Words"
+  getPriority: -> 10
+  isEnabled: -> true
+  getStatus: -> "Working correctly."
+  providesSpelling: -> true
+  providesSuggestions: -> false
+  providesAdding: -> false
+
+  check: (text) ->
     ranges = []
     for ignoreRegex in @ignoreWords
       textIndex = 0
