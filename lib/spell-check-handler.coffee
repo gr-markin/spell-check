@@ -63,8 +63,8 @@ class SpellCheckerHandler
     # Remove all of the confirmed correct words from the resulting incorrect
     # list. This allows us to have correct-only providers as opposed to only
     # incorrect providers.
-    if correct.length > 0
-      intersection.remove(correct)
+    if correct.ranges.length > 0
+      intersection.subtract(correct)
 
     # Convert the text ranges into Atom buffer coordinates.
     row = 0

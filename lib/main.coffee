@@ -65,6 +65,7 @@ module.exports =
       order: 8
 
   instance: null
+  ignore: null
   localeDictionaries: []
 
   activate: ->
@@ -72,16 +73,24 @@ module.exports =
     SpellCheckerHandler = require './spell-check-handler.coffee'
     @instance = new SpellCheckerHandler
 
-    # Initialize our internal dictionaries and add them to the list.
-    console.log "bob"
-    @reloadLocaleDictionaries atom.config.get('spell-check.locales')
+    # Initialize the system dictionaries and listen to any changes.
     that = this
+    that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
     atom.config.onDidChange 'spell-check.locales', ({newValue, oldValue}) ->
       that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
     atom.config.onDidChange 'spell-check.localePaths', ({newValue, oldValue}) ->
       that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
     atom.config.onDidChange 'spell-check.useLocales', ({newValue, oldValue}) ->
       that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
+
+    # Add in the ignore dictionary.
+    IgnoreChecker = require './ignore-checker.coffee'
+    ignoreWords = atom.config.get('spell-check.ignoreWords')
+    @ignore = new IgnoreChecker ignoreWords
+    @instance.addSpellChecker @ignore
+
+    atom.config.onDidChange 'spell-check.ignoreWords', ({newValue, oldValue}) ->
+      that.ignore.setIgnoreWords newValue
 
     # Set up the linkage to all the views that need checking.
     @viewsByEditor = new WeakMap

@@ -1,6 +1,6 @@
 spellchecker = require 'spellchecker'
 
-class Checker
+class SystemChecker
   spellchecker: null
   locale: null
   enabled: true
@@ -29,7 +29,7 @@ class Checker
     @enabled
 
   deactivate: ->
-    console.log("deactivating en-us")
+    console.log("deactivating " + @getId())
 
   checkSpelling: (text) ->
     { incorrect: @spellchecker.checkSpelling(text) }
@@ -37,4 +37,4 @@ class Checker
   getMispelledRanges: (text) ->
     @spellchecker.checkSpelling(text)
 
-module.exports = Checker
+module.exports = SystemChecker
