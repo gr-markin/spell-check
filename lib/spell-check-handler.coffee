@@ -10,23 +10,24 @@ class SpellCheckerHandler
   removeSpellChecker: (spellChecker) ->
     @checkers = @checkers.filter (plugin) -> plugin isnt spellChecker
 
-  check: (id, text) ->
+  check: (id, buffer) ->
     # For every registered spellchecker, we need to find out the ranges in the
     # text that the checker confirms are correct or indicates is a misspelling.
     # We keep these as separate lists since the different checkers may indicate
     # the same range for either and we need to be able to remove confirmed words
     # from the misspelled ones.
+    text = buffer.getText()
     correct = new multirange.MultiRange([])
     incorrects = []
 
     for checker in @checkers
       # We only care if this plugin contributes to checking spelling.
-      if not checker.isEnabled() or not checker.providesSpelling()
+      if not checker.isEnabled() or not checker.providesSpelling(buffer)
         continue
 
       # Get the results which includes positive (correct) and negative (incorrect)
       # ranges.
-      results = checker.check(text)
+      results = checker.check(buffer, text)
 
       if results.correct
         for range in results.correct

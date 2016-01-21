@@ -52,20 +52,20 @@ The `nameOfFunctionToProvideSpellCheck` function may return either a single obje
     * If this returns true, then the plugin will considered for processing.
 * getStatus(): string
     * Returns a string that describes the current status or state of the plugin. This is to allow a plugin to identify why it is disabled or to indicate version numbers. This can be formatted for Markdown, including links, and will be displayed on a status screen (eventually).
-* providesSpelling(): boolean
+* providesSpelling(buffer): boolean
     * If this returns true, then the plugin will be included when looking for incorrect and correct words via the `check` function.
-* check(text: string): { correct: [range], incorrect: [range] }
+* check(buffer, text: string): { correct: [range], incorrect: [range] }
     * `correct` and `incorrect` are both optional. If they are skipped, then it means the plugin does not contribute to the correctness or incorrectness of any word. If they are present but empty, it means there are no correct or incorrect words respectively.
     * The `range` objects have a signature of `{ start: X, end: Y }`.
-* providesSuggestions(): boolean
+* providesSuggestions(buffer): boolean
     * If this returns true, then the plugin will be included when querying for suggested words via the `suggest` function.
-* suggest(word: string): [suggestion: string]
+* suggest(buffer, word: string): [suggestion: string]
     * Returns a list of suggestions for a given word ordered so the most important is at the beginning of the list.
-* providesAdding(): boolean
+* providesAdding(buffer): boolean
     * If this returns true, then the dictionary allows a word to be added to the dictionary.
-* getAddingTargets(): [target]
+* getAddingTargets(buffer): [target]
     * Gets a list of targets to show to the user.
     * The `target` object has a minimum signature of `{ label: stringToShowTheUser }`. For example, `{ label: "Ignore word (case-sensitive)" }`.
     * This is a list to allow plugins to have multiple options, such as adding it as a case-sensitive or insensitive, temporary verses configuration, etc.
-* add(target, word)
+* add(buffer, target, word)
     * Adds a word to the dictionary, using the target for identifying which one is used.

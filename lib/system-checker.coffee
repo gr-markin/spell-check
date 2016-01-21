@@ -35,13 +35,13 @@ class SystemChecker
     else
       @reason
 
-  providesSpelling: -> true
-  providesSuggestions: -> true
-  providesAdding: -> false # Users shouldn't be adding to the system dictionary.
+  providesSpelling: (buffer) -> true
+  providesSuggestions: (buffer) -> true
+  providesAdding: (buffer) -> false # Users shouldn't be adding to the system dictionary.
 
-  check: (text) ->
+  check: (buffer, text) ->
     { incorrect: @spellchecker.checkSpelling(text) }
 
-  suggest: (word) -> [] # TODO Not implemented yet.
+  suggest: (buffer, word) -> [] # TODO Not implemented yet.
 
 module.exports = SystemChecker

@@ -94,7 +94,7 @@ class SpellCheckView
   updateMisspellings: ->
     # Task::start can throw errors atom/atom#3326
     try
-      @task.start(@buffer.getText())
+      @task.start(@buffer)
     catch error
       console.warn('Error starting spell check task', error.stack ? error)
 

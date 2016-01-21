@@ -12,11 +12,11 @@ class IgnoreChecker
   getPriority: -> 10
   isEnabled: -> true
   getStatus: -> "Working correctly."
-  providesSpelling: -> true
-  providesSuggestions: -> false
-  providesAdding: -> false
+  providesSpelling: (buffer) -> true
+  providesSuggestions: (buffer) -> false
+  providesAdding: (buffer) -> false
 
-  check: (text) ->
+  check: (buffer, text) ->
     ranges = []
     for ignoreRegex in @ignoreWords
       textIndex = 0

@@ -19,10 +19,10 @@ class SpellCheckTask
       @constructor.task?.terminate()
       @constructor.task = null
 
-  start: (text) ->
+  start: (buffer) ->
     #@constructor.task ?= new Task(@handler.check)
     #@constructor.task?.start {@id, text}, @constructor.dispatchMisspellings
-    @constructor.dispatchMisspellings(@handler.check(@id, text))
+    @constructor.dispatchMisspellings(@handler.check(@id, buffer))
 
   onDidSpellCheck: (callback) ->
     @constructor.callbacksById[@id] = callback
