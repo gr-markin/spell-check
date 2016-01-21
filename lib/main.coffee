@@ -34,8 +34,7 @@ module.exports =
       type: 'array'
       default: [
         '/usr/share/hunspell',
-        '/usr/share/myspell/dicts',
-        'internal'
+        '/usr/share/myspell/dicts'
       ]
       items:
         type: 'string'
@@ -74,10 +73,15 @@ module.exports =
     @instance = new SpellCheckerHandler
 
     # Initialize our internal dictionaries and add them to the list.
-    @reloadLocaleDictionaries atom.config.get 'spell-check.locales'
+    console.log "bob"
+    @reloadLocaleDictionaries atom.config.get('spell-check.locales')
     that = this
     atom.config.onDidChange 'spell-check.locales', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries newValue
+      that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
+    atom.config.onDidChange 'spell-check.localePaths', ({newValue, oldValue}) ->
+      that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
+    atom.config.onDidChange 'spell-check.useLocales', ({newValue, oldValue}) ->
+      that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
 
     # Set up the linkage to all the views that need checking.
     @viewsByEditor = new WeakMap
@@ -103,14 +107,20 @@ module.exports =
     #    @instance.addSpellChecker(plugin)
 
   reloadLocaleDictionaries: (locales) ->
+    console.log 'spell-check: reloading locale dictionaries', locales
+
     # Remove any old dictionaries from the list.
     for dict in @localeDictionaries
       @instance.removeSpellChecker dict
     @localeDictionaries.clear
 
+    # If we aren't using the locales, then skip it.
+    useLocales = atom.config.get 'spell-check.useLocales'
+    if not useLocales
+      return
+
     # Go through the new list and create new ones.
     paths = atom.config.get 'spell-check.localePaths'
-
     for locale in locales
       checker = new SystemChecker locale, paths
       @instance.addSpellChecker checker

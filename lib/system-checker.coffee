@@ -3,7 +3,7 @@ spellchecker = require 'spellchecker'
 class Checker
   spellchecker: null
   locale: null
-  disabled: false
+  enabled: true
   reason: null
 
   constructor: (locale, paths) ->
@@ -14,20 +14,19 @@ class Checker
     # Windows 8 uses one, Linux uses another. We also check every given path
     # provided by the parameters.
     for path in paths
-      # If we have "internal" as a path, use the dictionary's paths.
-      if path is "internal"
-        path = spellchecker.getDictionaryPath
-
-      if @spellchecker.setDictionary(locale, "/usr/share/hunspell/")
+      if @spellchecker.setDictionary(locale, path)
         return
 
     # If we broke out of the loop, we couldn't load the checker.
-    @disabled = true
+    @enabled = false
     @reason = "Cannot find dictionary for " + @locale + "."
     console.log @locale, @reason
 
   getId: ->
     "spell-check-" + @locale.toLowerCase().replace("_", "-")
+
+  isEnabled: ->
+    @enabled
 
   deactivate: ->
     console.log("deactivating en-us")
