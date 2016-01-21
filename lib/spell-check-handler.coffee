@@ -7,7 +7,7 @@ class SpellCheckerHandler
   addSpellChecker: (spellChecker) ->
     @spellCheckers.push spellChecker
 
-  deleteSpellChecker: (spellChecker) ->
+  removeSpellChecker: (spellChecker) ->
     @spellCheckers = @spellCheckers.filter (plugin) -> plugin isnt spellChecker
 
   check: (id, text) ->

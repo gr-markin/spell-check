@@ -1,8 +1,7 @@
+SystemChecker = require "./system-checker"
 SpellCheckView = null
 
 module.exports =
-  instance: null
-
   config:
     grammars:
       type: 'array'
@@ -66,10 +65,19 @@ module.exports =
       description: 'List words that are considered correct even if they do not appear in any other dictionary.'
       order: 8
 
+  instance: null
+  localeDictionaries: []
+
   activate: ->
     # Create the unified handler for all spellchecking.
     SpellCheckerHandler = require './spell-check-handler.coffee'
     @instance = new SpellCheckerHandler
+
+    # Initialize our internal dictionaries and add them to the list.
+    @reloadLocaleDictionaries atom.config.get 'spell-check.locales'
+    that = this
+    atom.config.onDidChange 'spell-check.locales', ({newValue, oldValue}) ->
+      that.reloadLocaleDictionaries newValue
 
     # Set up the linkage to all the views that need checking.
     @viewsByEditor = new WeakMap
@@ -93,3 +101,17 @@ module.exports =
     #new Disposable =>
     #  for plugin in plugins
     #    @instance.addSpellChecker(plugin)
+
+  reloadLocaleDictionaries: (locales) ->
+    # Remove any old dictionaries from the list.
+    for dict in @localeDictionaries
+      @instance.removeSpellChecker dict
+    @localeDictionaries.clear
+
+    # Go through the new list and create new ones.
+    paths = atom.config.get 'spell-check.localePaths'
+
+    for locale in locales
+      checker = new SystemChecker locale, paths
+      @instance.addSpellChecker checker
+      @localeDictionaries.push checker
