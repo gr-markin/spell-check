@@ -14,7 +14,7 @@ class IgnoreChecker
   getStatus: -> "Working correctly."
   providesSpelling: (buffer) -> true
   providesSuggestions: (buffer) -> true
-  providesAdding: (buffer) -> false
+  providesAdding: (buffer) -> true
 
   check: (buffer, text) ->
     ranges = []
@@ -55,12 +55,30 @@ class IgnoreChecker
       results.push s[key].text
     results
 
+  getAddingTargets: (buffer) ->
+    [
+      {sensitive: false, label: "Add to " + @getName() + " (case-insensitive)"},
+      {sensitive: true, label: "Add to " + @getName() + " (case-sensitive)"}
+    ]
+
+  add: (buffer, target) ->
+    # Build up the pattern we'll be using.
+    flag = "i"
+    if target.sensitive
+      flag = ""
+    pattern = "/" + target.word + "/" + flag
+
+    # Add it to the configuration list which will trigger a reload.
+    c = atom.config.get 'spell-check.ignoreWords'
+    c.push pattern
+    atom.config.set 'spell-check.ignoreWords', c
+
   setIgnoreWords: (ignoreWords) ->
     @ignores = []
     if ignoreWords
       for ignore in ignoreWords
         @ignores.push @makeIgnore ignore
-    console.log("spell-check: ignore words ", @ignores)
+    console.log @getId() + ": ignore words ", @ignores
 
   makeIgnore: (input) ->
     m = input.match /^\/(.*)\/(\w*)$/

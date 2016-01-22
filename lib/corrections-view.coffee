@@ -20,20 +20,32 @@ class CorrectionsView extends SelectListView
     @cancel()
     @remove()
 
-  confirmed: (correction) ->
+  confirmed: (item) ->
     @cancel()
-    return unless correction
+    return unless item
     @editor.transact =>
-      @editor.setSelectedBufferRange(@marker.getRange())
-      @editor.insertText(correction)
+      if item.hasOwnProperty "suggestion"
+        # Update the buffer with the correction.
+        @editor.setSelectedBufferRange(@marker.getRange())
+        @editor.insertText(correction)
+      if item.hasOwnProperty "label"
+        # Send the "add" request to the plugin.
+        item.plugin.add @editor.buffer, item
 
   cancelled: ->
     @overlayDecoration.destroy()
     @restoreFocus()
 
-  viewForItem: (word) ->
-    element = document.createElement('li')
-    element.textContent = word
+  viewForItem: (item) ->
+    element = document.createElement "li"
+    if item.hasOwnProperty "suggestion"
+      # This is a word replacement suggestion.
+      element.textContent = item.suggestion
+    if item.hasOwnProperty "label"
+      # This is an operation such as add word.
+      em = document.createElement "em"
+      em.textContent = item.label
+      element.appendChild em
     element
 
   selectNextItemView: ->

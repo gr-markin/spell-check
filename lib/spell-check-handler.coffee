@@ -131,16 +131,38 @@ class SpellCheckerHandler
 
       return value1.suggestion.localeCompare(value2.suggestion)
 
-    # Go through the keys and build the final list. As we go through, we also
-    # want to remove duplicates.
+    # Go through the keys and build the final list of suggestions. As we go
+    # through, we also want to remove duplicates.
     results = []
     seen = []
     for key in keys
       s = suggestions[key]
       if seen.hasOwnProperty s.suggestion
         continue
-      results.push s.suggestion
+      results.push s
       seen[s.suggestion] = 1
+
+    # We also grab the "add to dictionary" listings.
+    that = this
+    keys = Object.keys(@checkers).sort (key1, key2) ->
+      value1 = that.checkers[key1]
+      value2 = that.checkers[key2]
+      value1.getPriority() - value2.getPriority()
+
+    for key in keys
+      # We only care if this plugin contributes to checking to suggestions.
+      checker = @checkers[key]
+      if not checker.isEnabled() or not checker.providesAdding(buffer)
+        continue
+
+      # Add all the targets to the list.
+      targets = checker.getAddingTargets buffer
+      for target in targets
+        target.plugin = checker
+        target.word = word
+        results.push target
+
+    # Return the resulting list of options.
     results
 
   addMisspellings: (misspellings, row, range, characterIndex, text) ->
