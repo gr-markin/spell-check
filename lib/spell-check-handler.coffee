@@ -137,7 +137,7 @@ class SpellCheckerHandler
     seen = []
     for key in keys
       s = suggestions[key]
-      if seen.hasOwnProperty(s.suggestion)
+      if seen.hasOwnProperty s.suggestion
         continue
       results.push s.suggestion
       seen[s.suggestion] = 1
