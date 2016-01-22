@@ -100,6 +100,49 @@ class SpellCheckerHandler
     # Return the resulting misspellings.
     {id, misspellings}
 
+  suggest: (buffer, word) ->
+    # Gather up a list of corrections and put them into a custom object that has
+    # the priority of the plugin, the index in the results, and the word itself.
+    # We use this to intersperse the results together to avoid having the
+    # preferred answer for the second plugin below the least preferred of the
+    # first.
+    suggestions = []
+
+    for checker in @checkers
+      # We only care if this plugin contributes to checking to suggestions.
+      if not checker.isEnabled() or not checker.providesSuggestions(buffer)
+        continue
+
+      # Get the suggestions for this word.
+      index = 0
+      priority = checker.getPriority()
+      for suggestion in checker.suggest(buffer, word)
+        suggestions.push { priority: priority, index: index++, suggestion: suggestion }
+
+    # Once we have the suggestions, then sort them to intersperse the results.
+    keys = Object.keys(suggestions).sort (key1, key2) ->
+      value1 = suggestions[key1]
+      value2 = suggestions[key2]
+      weight1 = value1.priority * value1.index
+      weight2 = value2.priority * value2.index
+
+      if weight1 != weight2
+        return weight1 - weight2
+
+      return value1.suggestion.localeCompare(value2.suggestion)
+
+    # Go through the keys and build the final list. As we go through, we also
+    # want to remove duplicates.
+    results = []
+    seen = []
+    for key in keys
+      s = suggestions[key]
+      if seen.hasOwnProperty(s.suggestion)
+        continue
+      results.push s.suggestion
+      seen[s.suggestion] = 1
+    results
+
   addMisspellings: (misspellings, row, range, characterIndex, text) ->
     # Get the substring of text, if there is no space, then we can just return
     # the entire result.

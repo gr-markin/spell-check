@@ -42,6 +42,7 @@ class SystemChecker
   check: (buffer, text) ->
     { incorrect: @spellchecker.checkSpelling(text) }
 
-  suggest: (buffer, word) -> [] # TODO Not implemented yet.
+  suggest: (buffer, word) ->
+    @spellchecker.getCorrectionsForMisspelling(word)
 
 module.exports = SystemChecker

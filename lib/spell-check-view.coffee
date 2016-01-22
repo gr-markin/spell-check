@@ -10,9 +10,9 @@ class SpellCheckView
   @content: ->
     @div class: 'spell-check'
 
-  constructor: (@editor, handler) ->
+  constructor: (@editor, @handler) ->
     @disposables = new CompositeDisposable
-    @task = new SpellCheckTask(handler)
+    @task = new SpellCheckTask(@handler)
     @initializeMarkerLayer()
 
     @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check:correct-misspelling', =>
@@ -99,6 +99,5 @@ class SpellCheckView
       console.warn('Error starting spell check task', error.stack ? error)
 
   getCorrections: (marker) ->
-    SpellChecker ?= require 'spellchecker'
     misspelling = @editor.getTextInBufferRange(marker.getRange())
-    corrections = SpellChecker.getCorrectionsForMisspelling(misspelling)
+    corrections = @handler.suggest(@buffer, misspelling)
