@@ -123,8 +123,8 @@ class SpellCheckerHandler
     keys = Object.keys(suggestions).sort (key1, key2) ->
       value1 = suggestions[key1]
       value2 = suggestions[key2]
-      weight1 = value1.priority * value1.index
-      weight2 = value2.priority * value2.index
+      weight1 = value1.priority + value1.index
+      weight2 = value2.priority + value2.index
 
       if weight1 != weight2
         return weight1 - weight2
