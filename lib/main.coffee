@@ -40,16 +40,6 @@ module.exports =
         type: 'string'
       description: 'List of paths to search for dictionary files. "internal" is a special case of using the dictionary shipped with the internal NodeJS modules.'
       order: 4
-    useProjectSettings:
-      type: 'boolean'
-      default: true
-      description: 'If checked, then a `language.json` in the project directory will also be used for spell-checking and suggestions.'
-      order: 5
-    createProjectSettings:
-      type: 'boolean'
-      default: false
-      description: 'If checked, then a `language.json` will be created in the project directory if a word is added to the dictionary. If false and `language.json` is not present, then additional words cannot be added.'
-      order: 6
     personalDictionary:
       type: 'string'
       default: ''
@@ -59,7 +49,7 @@ module.exports =
       type: 'array'
       default: [
         'GitHub',
-        'github'
+        '/github/'
       ]
       description: 'List words that are considered correct even if they do not appear in any other dictionary.'
       order: 8

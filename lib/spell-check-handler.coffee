@@ -61,7 +61,7 @@ class SpellCheckerHandler
       if intersection is null
         intersection = incorrect
       else
-        intersection = @getIntersection(intersection, incorrects[index])
+        intersection.intersect(incorrects[index])
 
     # If we have no intersection, then nothing to report as a problem.
     if intersection.length is 0
@@ -167,17 +167,5 @@ class SpellCheckerHandler
       [row, range[0] - characterIndex],
       [row, range[1] - characterIndex]
     ])
-
-  getIntersection: (ranges1, ranges2) ->
-    intersection = new multirange.MultiRange([])
-
-    for range1 in ranges1.ranges
-      for range2 in ranges2.ranges
-        if range1[0] <= range2[1] and range1[1] >= range2[0]
-          start = Math.max(range1[0], range2[0])
-          end = Math.min(range1[1], range2[1])
-          intersection.appendRange(start, end)
-
-    intersection
 
 module.exports = SpellCheckerHandler
