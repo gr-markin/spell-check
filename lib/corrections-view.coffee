@@ -5,7 +5,7 @@ module.exports =
 class CorrectionsView extends SelectListView
   initialize: (@editor, @corrections, @marker) ->
     super
-    @addClass('corrections popover-list')
+    @addClass('spell-check-corrections corrections popover-list')
     @attach()
 
   attach: ->
@@ -27,7 +27,7 @@ class CorrectionsView extends SelectListView
       if item.hasOwnProperty "suggestion"
         # Update the buffer with the correction.
         @editor.setSelectedBufferRange(@marker.getRange())
-        @editor.insertText(correction)
+        @editor.insertText(item.suggestion)
       if item.hasOwnProperty "label"
         # Send the "add" request to the plugin.
         item.plugin.add @editor.buffer, item
