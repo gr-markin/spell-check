@@ -32,13 +32,10 @@ module.exports =
       order: 3
     localePaths:
       type: 'array'
-      default: [
-        '/usr/share/hunspell',
-        '/usr/share/myspell/dicts'
-      ]
+      default: []
       items:
         type: 'string'
-      description: 'List of paths to search for dictionary files. "internal" is a special case of using the dictionary shipped with the internal NodeJS modules.'
+      description: 'List of additional paths to search for dictionary files. If a locale cannot be found in these, the internal code will attempt to find it using common search paths.'
       order: 4
     personalDictionary:
       type: 'string'
@@ -47,10 +44,7 @@ module.exports =
       order: 7
     ignoreWords:
       type: 'array'
-      default: [
-        'GitHub',
-        '/github/'
-      ]
+      default: []
       description: 'List words that are considered correct even if they do not appear in any other dictionary.'
       order: 8
     addIgnoreWords:

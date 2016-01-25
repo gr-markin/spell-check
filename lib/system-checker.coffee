@@ -1,4 +1,5 @@
 spellchecker = require 'spellchecker'
+path = require 'path'
 
 class SystemChecker
   spellchecker: null
@@ -10,14 +11,30 @@ class SystemChecker
     @spellchecker = new spellchecker.Spellchecker
     @locale = locale
 
-    # We have to check both the dash (en-US) and the unscore (en_US) because
-    # Windows 8 uses one, Linux uses another. We also check every given path
-    # provided by the parameters.
+    # Check the paths supplied by the user.
     for path in paths
-      if @spellchecker.setDictionary(locale, path)
+      if @spellchecker.setDictionary locale, path
         return
 
-    # If we broke out of the loop, we couldn't load the checker.
+    # Check common locations for the dictionary. These locations are based on
+    # the operating system.
+    if /linux/.test process.platform
+      if @spellchecker.setDictionary locale, "/usr/share/hunspell"
+        return
+      if @spellchecker.setDictionary locale, "/usr/share/myspell/dicts"
+        return
+
+    if /win32/.test process.platform
+      if @spellchecker.setDictionary locale, "C:\\Program Files (x86)\\Mozilla Firefox\\dictionaries"
+        return
+
+    # Try the packaged library inside the node_modules. `getDictionaryPath` is
+    # not available, so we have to fake it. This will only work for en-US.
+    vendor = path.join __dirname, "..", "node_modules", "spellchecker", "vendor", "hunspell_dictionaries"
+    if @spellchecker.setDictionary locale, vendor
+      return
+
+    # If we fell through all the if blocks, then we couldn't load the dictionary.
     @enabled = false
     @reason = "Cannot find dictionary for " + @locale + "."
     console.log @locale, @reason
