@@ -117,7 +117,7 @@ class SpellCheckerHandler
       index = 0
       priority = checker.getPriority()
       for suggestion in checker.suggest(buffer, word)
-        suggestions.push { priority: priority, index: index++, suggestion: suggestion }
+        suggestions.push { isSuggestion: true, priority: priority, index: index++, suggestion: suggestion, label: suggestion }
 
     # Once we have the suggestions, then sort them to intersperse the results.
     keys = Object.keys(suggestions).sort (key1, key2) ->
@@ -160,6 +160,7 @@ class SpellCheckerHandler
       for target in targets
         target.plugin = checker
         target.word = word
+        target.isSuggestion = false
         results.push target
 
     # Return the resulting list of options.

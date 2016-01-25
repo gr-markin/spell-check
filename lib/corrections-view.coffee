@@ -24,11 +24,11 @@ class CorrectionsView extends SelectListView
     @cancel()
     return unless item
     @editor.transact =>
-      if item.hasOwnProperty "suggestion"
+      if item.isSuggestion
         # Update the buffer with the correction.
         @editor.setSelectedBufferRange(@marker.getRange())
         @editor.insertText(item.suggestion)
-      if item.hasOwnProperty "label"
+      else
         # Send the "add" request to the plugin.
         item.plugin.add @editor.buffer, item
 
@@ -38,15 +38,18 @@ class CorrectionsView extends SelectListView
 
   viewForItem: (item) ->
     element = document.createElement "li"
-    if item.hasOwnProperty "suggestion"
+    if item.isSuggestion
       # This is a word replacement suggestion.
-      element.textContent = item.suggestion
-    if item.hasOwnProperty "label"
+      element.textContent = item.label
+    else
       # This is an operation such as add word.
       em = document.createElement "em"
       em.textContent = item.label
       element.appendChild em
     element
+
+  getFilterKey: ->
+    "label"
 
   selectNextItemView: ->
     super
