@@ -53,6 +53,11 @@ module.exports =
       ]
       description: 'List words that are considered correct even if they do not appear in any other dictionary.'
       order: 8
+    addIgnoreWords:
+      type: 'boolean'
+      default: false
+      description: 'If checked, then the suggestions will include options to add to the ignore words list.'
+      order: 9
 
   instance: null
   ignore: null
@@ -76,11 +81,15 @@ module.exports =
     # Add in the ignore dictionary.
     IgnoreChecker = require './ignore-checker.coffee'
     ignoreWords = atom.config.get('spell-check.ignoreWords')
+    addIgnoreWords = atom.config.get('spell-check.addIgnoreWords')
     @ignore = new IgnoreChecker ignoreWords
+    @ignore.setAddIgnoreWords addIgnoreWords
     @instance.addSpellChecker @ignore
 
     atom.config.onDidChange 'spell-check.ignoreWords', ({newValue, oldValue}) ->
       that.ignore.setIgnoreWords newValue
+    atom.config.onDidChange 'spell-check.addIgnoreWords', ({newValue, oldValue}) ->
+      that.ignore.setAddIgnoreWords newValue
 
     # Set up the linkage to all the views that need checking.
     @viewsByEditor = new WeakMap

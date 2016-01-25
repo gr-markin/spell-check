@@ -1,5 +1,6 @@
 class IgnoreChecker
   ignores: []
+  add: false
 
   constructor: (ignoreWords) ->
     @setIgnoreWords ignoreWords
@@ -56,10 +57,13 @@ class IgnoreChecker
     results
 
   getAddingTargets: (buffer) ->
-    [
-      {sensitive: false, label: "Add to " + @getName() + " (case-insensitive)"},
-      {sensitive: true, label: "Add to " + @getName() + " (case-sensitive)"}
-    ]
+    if @add
+      [
+        {sensitive: false, label: "Add to " + @getName() + " (case-insensitive)"},
+        {sensitive: true, label: "Add to " + @getName() + " (case-sensitive)"}
+      ]
+    else
+      []
 
   add: (buffer, target) ->
     # Build up the pattern we'll be using.
@@ -72,6 +76,9 @@ class IgnoreChecker
     c = atom.config.get 'spell-check.ignoreWords'
     c.push pattern
     atom.config.set 'spell-check.ignoreWords', c
+
+  setAddIgnoreWords: (newValue) ->
+    @add = newValue
 
   setIgnoreWords: (ignoreWords) ->
     @ignores = []
