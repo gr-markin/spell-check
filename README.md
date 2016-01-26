@@ -1,5 +1,7 @@
 # Spell Check Package [![Build Status](https://travis-ci.org/atom/spell-check.svg?branch=master)](https://travis-ci.org/atom/spell-check)
 
+**This is a test package. Disable the built-in `spell-check` module before using it.**
+
 Highlights misspelling in Atom and shows possible corrections.
 
 Use `cmd+shift+:` to bring up the list of corrections when your cursor is on a
