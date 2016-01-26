@@ -8,14 +8,14 @@ SpellChecker = null
 module.exports =
 class SpellCheckView
   @content: ->
-    @div class: 'spell-check'
+    @div class: 'spell-check-test'
 
   constructor: (@editor, @handler) ->
     @disposables = new CompositeDisposable
     @task = new SpellCheckTask(@handler)
     @initializeMarkerLayer()
 
-    @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check:correct-misspelling', =>
+    @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check-test:correct-misspelling', =>
       if marker = @markerLayer.findMarkers({containsPoint: @editor.getCursorBufferPosition()})[0]
         CorrectionsView ?= require './corrections-view'
         @correctionsView?.destroy()
@@ -34,7 +34,7 @@ class SpellCheckView
     @disposables.add atom.config.onDidChange 'editor.fontSize', =>
       @subscribeToBuffer()
 
-    @disposables.add atom.config.onDidChange 'spell-check.grammars', =>
+    @disposables.add atom.config.onDidChange 'spell-check-test.grammars', =>
       @subscribeToBuffer()
 
     @subscribeToBuffer()
@@ -75,7 +75,7 @@ class SpellCheckView
 
   spellCheckCurrentGrammar: ->
     grammar = @editor.getGrammar().scopeName
-    _.contains(atom.config.get('spell-check.grammars'), grammar)
+    _.contains(atom.config.get('spell-check-test.grammars'), grammar)
 
   detroyMarkers: ->
     @markerLayer.destroy()

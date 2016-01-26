@@ -5,7 +5,7 @@ module.exports =
 class CorrectionsView extends SelectListView
   initialize: (@editor, @corrections, @marker) ->
     super
-    @addClass('spell-check-corrections corrections popover-list')
+    @addClass('spell-check-test-corrections corrections popover-list')
     @attach()
 
   attach: ->
