@@ -37,21 +37,16 @@ module.exports =
         type: 'string'
       description: 'List of additional paths to search for dictionary files. If a locale cannot be found in these, the internal code will attempt to find it using common search paths.'
       order: 4
-    personalDictionary:
-      type: 'string'
-      default: ''
-      description: 'If a path is provided, then a personal dictionary will be use that allows for checking and adding new words. If a directory is given, a file named `personal.dic` will be created.'
-      order: 7
     ignoreWords:
       type: 'array'
       default: []
       description: 'List words that are considered correct even if they do not appear in any other dictionary.'
-      order: 8
+      order: 7
     addIgnoreWords:
       type: 'boolean'
       default: false
       description: 'If checked, then the suggestions will include options to add to the ignore words list.'
-      order: 9
+      order: 8
 
   instance: null
   ignore: null
