@@ -59,25 +59,25 @@ module.exports =
 
     # Initialize the system dictionaries and listen to any changes.
     that = this
-    that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
-    atom.config.onDidChange 'spell-check.locales', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
-    atom.config.onDidChange 'spell-check.localePaths', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
-    atom.config.onDidChange 'spell-check.useLocales', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries atom.config.get('spell-check.locales')
+    that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
+    atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
+      that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
+    atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
+      that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
+    atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
+      that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
 
     # Add in the ignore dictionary.
     IgnoreChecker = require './ignore-checker.coffee'
-    knownWords = atom.config.get('spell-check.knownWords')
-    addKnownWords = atom.config.get('spell-check.addKnownWords')
+    knownWords = atom.config.get('spell-check-test.knownWords')
+    addKnownWords = atom.config.get('spell-check-test.addKnownWords')
     @ignore = new IgnoreChecker knownWords
     @ignore.setAddKnownWords addKnownWords
     @instance.addSpellChecker @ignore
 
-    atom.config.onDidChange 'spell-check.knownWords', ({newValue, oldValue}) ->
+    atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
       that.ignore.setKnownWords newValue
-    atom.config.onDidChange 'spell-check.addKnownWords', ({newValue, oldValue}) ->
+    atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
       that.ignore.setAddKnownWords newValue
 
     # Set up the linkage to all the views that need checking.
@@ -112,12 +112,12 @@ module.exports =
     @localeDictionaries.clear
 
     # If we aren't using the locales, then skip it.
-    useLocales = atom.config.get 'spell-check.useLocales'
+    useLocales = atom.config.get 'spell-check-test.useLocales'
     if not useLocales
       return
 
     # Go through the new list and create new ones.
-    paths = atom.config.get 'spell-check.localePaths'
+    paths = atom.config.get 'spell-check-test.localePaths'
     for locale in locales
       checker = new SystemChecker locale, paths
       @instance.addSpellChecker checker
