@@ -2,8 +2,8 @@ class IgnoreChecker
   ignores: []
   add: false
 
-  constructor: (ignoreWords) ->
-    @setIgnoreWords ignoreWords
+  constructor: (knownWords) ->
+    @setKnownWords knownWords
 
   deactivate: ->
     console.log("deactivating " + @getId())
@@ -73,17 +73,17 @@ class IgnoreChecker
     pattern = "/" + target.word + "/" + flag
 
     # Add it to the configuration list which will trigger a reload.
-    c = atom.config.get 'spell-check.ignoreWords'
+    c = atom.config.get 'spell-check.knownWords'
     c.push pattern
-    atom.config.set 'spell-check.ignoreWords', c
+    atom.config.set 'spell-check.knownWords', c
 
-  setAddIgnoreWords: (newValue) ->
+  setAddKnownWords: (newValue) ->
     @add = newValue
 
-  setIgnoreWords: (ignoreWords) ->
+  setKnownWords: (knownWords) ->
     @ignores = []
-    if ignoreWords
-      for ignore in ignoreWords
+    if knownWords
+      for ignore in knownWords
         @ignores.push @makeIgnore ignore
     console.log @getId() + ": ignore words ", @ignores
 

@@ -47,7 +47,7 @@ The `nameOfFunctionToProvideSpellCheck` function may return either a single obje
 * getName(): string
     * Returns the human-readable name for the plugin. This is used on the status screen and in various dialogs/popups.
 * getPriority(): number
-    * Determines how significant the plugin is for information with lower numbers being more important. Typically, user-entered data (such as the config `ignoreWords` configuration or a project's dictionary) will be lower than system data (priority 100).
+    * Determines how significant the plugin is for information with lower numbers being more important. Typically, user-entered data (such as the config `knownWords` configuration or a project's dictionary) will be lower than system data (priority 100).
 * isEnabled(): boolean
     * If this returns true, then the plugin will considered for processing.
 * getStatus(): string

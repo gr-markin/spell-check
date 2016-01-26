@@ -37,15 +37,15 @@ module.exports =
         type: 'string'
       description: 'List of additional paths to search for dictionary files. If a locale cannot be found in these, the internal code will attempt to find it using common search paths.'
       order: 4
-    ignoreWords:
+    knownWords:
       type: 'array'
       default: []
       description: 'List words that are considered correct even if they do not appear in any other dictionary.'
       order: 7
-    addIgnoreWords:
+    addKnownWords:
       type: 'boolean'
       default: false
-      description: 'If checked, then the suggestions will include options to add to the ignore words list.'
+      description: 'If checked, then the suggestions will include options to add to the known words list above.'
       order: 8
 
   instance: null
@@ -69,16 +69,16 @@ module.exports =
 
     # Add in the ignore dictionary.
     IgnoreChecker = require './ignore-checker.coffee'
-    ignoreWords = atom.config.get('spell-check.ignoreWords')
-    addIgnoreWords = atom.config.get('spell-check.addIgnoreWords')
-    @ignore = new IgnoreChecker ignoreWords
-    @ignore.setAddIgnoreWords addIgnoreWords
+    knownWords = atom.config.get('spell-check.knownWords')
+    addKnownWords = atom.config.get('spell-check.addKnownWords')
+    @ignore = new IgnoreChecker knownWords
+    @ignore.setAddKnownWords addKnownWords
     @instance.addSpellChecker @ignore
 
-    atom.config.onDidChange 'spell-check.ignoreWords', ({newValue, oldValue}) ->
-      that.ignore.setIgnoreWords newValue
-    atom.config.onDidChange 'spell-check.addIgnoreWords', ({newValue, oldValue}) ->
-      that.ignore.setAddIgnoreWords newValue
+    atom.config.onDidChange 'spell-check.knownWords', ({newValue, oldValue}) ->
+      that.ignore.setKnownWords newValue
+    atom.config.onDidChange 'spell-check.addKnownWords', ({newValue, oldValue}) ->
+      that.ignore.setAddKnownWords newValue
 
     # Set up the linkage to all the views that need checking.
     @viewsByEditor = new WeakMap
