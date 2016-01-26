@@ -28,7 +28,7 @@ module.exports =
       ]
       items:
         type: 'string'
-      description: 'List of locales to use for the system spell-checking. Examples would be "en-US" or "de-DE".'
+      description: 'List of locales to use for the system spell-checking. Examples would be "en-US" or "de-DE". For Windows, the appropriate language must be installed and Atom restarted.'
       order: 3
     localePaths:
       type: 'array'
