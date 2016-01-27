@@ -45,7 +45,7 @@ class SpellCheckView
     @markerLayer = @editor.getBuffer().addMarkerLayer()
     @markerLayerDecoration = @editor.decorateMarkerLayer(@markerLayer, {
       type: 'highlight',
-      class: 'spell-check-misspelling',
+      class: 'spell-check-test-misspelling',
       deprecatedRegionClass: 'misspelling'
     })
 
