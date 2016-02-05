@@ -82,11 +82,11 @@ module.exports =
       that.ignore.setAddKnownWords newValue
 
     @commandSubscription = atom.commands.add 'atom-workspace',
-        'spell-check:toggle': => @toggle()
+        'spell-check-test:toggle': => @toggle()
     @viewsByEditor = new WeakMap
     @disposable = atom.workspace.observeTextEditors (editor) =>
       SpellCheckView ?= require './spell-check-view'
-      spellCheckView = new SpellCheckView(editor)
+      spellCheckView = new SpellCheckView(editor, @instance)
 
       # save the {editor} into a map
       editorId = editor.id

@@ -7,7 +7,7 @@
         'submenu': [
           {
             'label': 'Toggle'
-            'command': 'spell-check:toggle'
+            'command': 'spell-check-test:toggle'
           }
         ]
       }
