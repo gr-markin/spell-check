@@ -1,6 +1,6 @@
 class IgnoreChecker
   ignores: []
-  add: false
+  enableAdd: false
 
   constructor: (knownWords) ->
     @setKnownWords knownWords
@@ -15,9 +15,10 @@ class IgnoreChecker
   getStatus: -> "Working correctly."
   providesSpelling: (buffer) -> true
   providesSuggestions: (buffer) -> true
-  providesAdding: (buffer) -> true
+  providesAdding: (buffer) -> @enableAdd
 
   check: (buffer, text) ->
+    # Check the words against the project's ignore list.
     ranges = []
     for ignore in @ignores
       textIndex = 0
@@ -57,7 +58,7 @@ class IgnoreChecker
     results
 
   getAddingTargets: (buffer) ->
-    if @add
+    if @enableAdd
       [
         {sensitive: false, label: "Add to " + @getName() + " (case-insensitive)"},
         {sensitive: true, label: "Add to " + @getName() + " (case-sensitive)"}
@@ -66,19 +67,24 @@ class IgnoreChecker
       []
 
   add: (buffer, target) ->
-    # Build up the pattern we'll be using.
-    flag = "i"
-    if target.sensitive
-      flag = ""
-    pattern = "/" + target.word + "/" + flag
+    # Build up the pattern we'll be using. It looks better if we add it not as
+    # a regular expression, so figure out how to change this.
+    pattern = target.word
+
+    if not target.sensitive
+      pattern = pattern.toLowerCase()
+
+    if target.sensitive and target.word = target.word.toLowerCase()
+      # This is already lowercase, so we need to make it case sensitive.
+      pattern = '/\b' + target.word + '\b/'
 
     # Add it to the configuration list which will trigger a reload.
-    c = atom.config.get 'spell-check.knownWords'
+    c = atom.config.get 'spell-check-test.knownWords'
     c.push pattern
-    atom.config.set 'spell-check.knownWords', c
+    atom.config.set 'spell-check-test.knownWords', c
 
   setAddKnownWords: (newValue) ->
-    @add = newValue
+    @enableAdd = newValue
 
   setKnownWords: (knownWords) ->
     @ignores = []
@@ -92,7 +98,8 @@ class IgnoreChecker
     if m
       # Build up the regex from the components. We can't handle "g" in the flags,
       # so quietly remove it.
-      f = m[2].replace("g", "")
+      f = m[2].replace "g", ""
+      f = f.replace "y", ""
       r = new RegExp m[1], f
       { regex: r, text: m[1], flags: f }
     else
