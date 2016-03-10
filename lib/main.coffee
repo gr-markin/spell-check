@@ -64,10 +64,6 @@ module.exports =
     for plugin in plugins
       @instance.addSpellChecker(plugin)
 
-    #new Disposable =>
-    #  for plugin in plugins
-    #    @instance.addSpellChecker(plugin)
-
   reloadLocaleDictionaries: (locales) ->
     console.log 'spell-check: reloading locale dictionaries', locales
 
