@@ -1,8 +1,5 @@
-{Task} = require 'atom'
 idCounter = 0
 
-# Wraps a single {Task} so that multiple views reuse the same task but it is
-# terminated once all views are removed.
 module.exports =
 class SpellCheckTask
   @handler: null
@@ -20,9 +17,7 @@ class SpellCheckTask
       @constructor.task = null
 
   start: (buffer) ->
-    #@constructor.task ?= new Task(@handler.check)
-    #@constructor.task?.start {@id, text}, @constructor.dispatchMisspellings
-    @constructor.dispatchMisspellings(@handler.check(@id, buffer))
+    @constructor.dispatchMisspellings @handler.check(@id, buffer)
 
   onDidSpellCheck: (callback) ->
     @constructor.callbacksById[@id] = callback
