@@ -8,7 +8,7 @@
     "multi-integer-range": "^1.4.0",
     "natural": "^0.2.1",
     "spellchecker": "3.2.2",
-    "spelling-manager": "0.1.0",
+    "spelling-manager": "0.2.0",
     "underscore-plus": "^1"
   },
   "repository": "https://github.com/dmoonfire/spell-check",

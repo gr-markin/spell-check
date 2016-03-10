@@ -59,11 +59,13 @@ describe "Spell check", ->
       misspellingMarkers.length > 0
 
     runs ->
-      expect(misspellingMarkers.length).toBe 4
+      expect(misspellingMarkers.length).toBe 2
       expect(textForMarker(misspellingMarkers[0])).toEqual "chok"
       expect(textForMarker(misspellingMarkers[1])).toEqual "bok"
 
-  it "doesn't consider our company's name to be a spelling error", ->
+  it "allow entering of known words", ->
+    atom.config.set('spell-check-test.knownWords', ['GitHub', '!github'])
+    atom.config.set('spell-check-test.locales', ['en-US'])
     editor.setText("GitHub (aka github): Where codez are built.")
     atom.config.set('spell-check-test.grammars', ['source.js'])
 

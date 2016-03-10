@@ -12,7 +12,7 @@ class SystemChecker
     @paths = paths
 
   deactivate: ->
-    console.log("deactivating " + @getId())
+    console.log @getId(), "deactivating"
 
   getId: -> "spell-check:" + @locale.toLowerCase().replace("_", "-")
   getName: -> "System Dictionary (" + @locale + ")"
@@ -86,6 +86,6 @@ class SystemChecker
     # If we fell through all the if blocks, then we couldn't load the dictionary.
     @enabled = false
     @reason = "Cannot find dictionary for " + @locale + "."
-    console.log @locale, @reason
+    console.log @getId(), "Can't load" + @locale, @reason
 
 module.exports = SystemChecker
