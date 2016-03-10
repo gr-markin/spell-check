@@ -1,4 +1,4 @@
-class IgnoreChecker
+class KnownWordsChecker
   ignores: []
   enableAdd: false
 
@@ -8,8 +8,8 @@ class IgnoreChecker
   deactivate: ->
     console.log("deactivating " + @getId())
 
-  getId: -> "spell-check:ignore"
-  getName: -> "Ignore Words"
+  getId: -> "spell-check:known-words"
+  getName: -> "Known Words"
   getPriority: -> 10
   isEnabled: -> true
   getStatus: -> "Working correctly."
@@ -112,4 +112,4 @@ class IgnoreChecker
       r = new RegExp ("\\b" + input + "\\b"), f
       { regex: r, text: input, flags: f }
 
-module.exports = IgnoreChecker
+module.exports = KnownWordsChecker

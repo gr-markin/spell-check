@@ -23,10 +23,10 @@ module.exports =
       that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
 
     # Add in the ignore dictionary.
-    IgnoreChecker = require './ignore-checker.coffee'
+    KnownWordsChecker = require './known-words-checker.coffee'
     knownWords = atom.config.get('spell-check-test.knownWords')
     addKnownWords = atom.config.get('spell-check-test.addKnownWords')
-    @ignore = new IgnoreChecker knownWords
+    @ignore = new KnownWordsChecker knownWords
     @ignore.setAddKnownWords addKnownWords
     @instance.addSpellChecker @ignore
 
