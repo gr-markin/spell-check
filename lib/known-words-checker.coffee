@@ -26,7 +26,8 @@ class KnownWordsChecker
 
   check: (buffer, text) ->
     ranges = []
-    for token in @checker.check text
+    checked = @checker.check text
+    for token in checked
       if token.status == 1
         ranges.push {start: token.start, end: token.end }
     { correct: ranges }

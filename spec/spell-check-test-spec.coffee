@@ -32,6 +32,7 @@ describe "Spell check", ->
       editorElement = atom.views.getView(editor)
 
   it "decorates all misspelled words", ->
+    atom.config.set('spell-check-test.locales', ['en-US'])
     editor.setText("This middle of thiss\nsentencts\n\nhas issues and the \"edn\" 'dsoe' too")
     atom.config.set('spell-check-test.grammars', ['source.js'])
 
@@ -46,6 +47,21 @@ describe "Spell check", ->
       expect(textForMarker(misspellingMarkers[1])).toEqual "sentencts"
       expect(textForMarker(misspellingMarkers[2])).toEqual "edn"
       expect(textForMarker(misspellingMarkers[3])).toEqual "dsoe"
+
+  it "decorates misspelled words with a leading space", ->
+    atom.config.set('spell-check-test.locales', ['en-US'])
+    editor.setText("\nchok bok")
+    atom.config.set('spell-check-test.grammars', ['source.js'])
+
+    misspellingMarkers = null
+    waitsFor ->
+      misspellingMarkers = getMisspellingMarkers()
+      misspellingMarkers.length > 0
+
+    runs ->
+      expect(misspellingMarkers.length).toBe 4
+      expect(textForMarker(misspellingMarkers[0])).toEqual "chok"
+      expect(textForMarker(misspellingMarkers[1])).toEqual "bok"
 
   it "doesn't consider our company's name to be a spelling error", ->
     editor.setText("GitHub (aka github): Where codez are built.")
@@ -110,7 +126,7 @@ describe "Spell check", ->
 
       runs ->
         expect(getMisspellingMarkers().length).toBe 1
-        atom.commands.dispatch(workspaceElement, 'spell-check:toggle')
+        atom.commands.dispatch(workspaceElement, 'spell-check-test:toggle')
         expect(getMisspellingMarkers().length).toBe 0
 
   describe "when the editor's grammar changes to one that does not have spell check enabled", ->

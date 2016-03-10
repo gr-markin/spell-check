@@ -1,4 +1,4 @@
-SpellChecker = require 'spellchecker'
+spellChecker = require 'spellchecker'
 multirange = require 'multi-integer-range'
 
 class SpellCheckerHandler
@@ -73,28 +73,46 @@ class SpellCheckerHandler
     if correct.ranges.length > 0
       intersection.subtract(correct)
 
-    # Convert the text ranges into Atom buffer coordinates.
+    # Convert the text ranges (index into the string) into Atom buffer
+    # coordinates ( row and column).
     row = 0
     rangeIndex = 0
-    characterIndex = 0
-    while characterIndex < text.length and rangeIndex < intersection.ranges.length
-      lineBreakIndex = text.indexOf('\n', characterIndex)
-      if lineBreakIndex is -1
-        lineBreakIndex = Infinity
+    lineBeginIndex = 0
+    while lineBeginIndex < text.length and rangeIndex < intersection.ranges.length
+      # Figure out where the next line break is. If we hit -1, then we make sure
+      # it is a higher number so our < comparisons work properly.
+      lineEndIndex = text.indexOf('\n', lineBeginIndex)
+      if lineEndIndex is -1
+        lineEndIndex = Infinity
 
+      # Loop through and get all the ranegs for this line.
       loop
         range = intersection.ranges[rangeIndex]
-        if range and range[0] < lineBreakIndex
+        if range and range[0] < lineEndIndex
+          # Figure out the character range of this line. We need this because
+          # @addMisspellings doesn't handle jumping across lines easily and the
+          # use of the number ranges is inclusive.
+          lineRange = new multirange.MultiRange([]).appendRange(lineBeginIndex, lineEndIndex)
+          rangeRange = new multirange.MultiRange([]).appendRange(range[0], range[1])
+          lineRange.intersect(rangeRange)
+
           # The range we have here includes whitespace between two concurrent
           # tokens ("zz zz zz" shows up as a single misspelling). The original
           # version would split the example into three separate ones, so we
-          # do the same thing.
-          @addMisspellings(misspellings, row, range, characterIndex, text)
-          rangeIndex++
+          # do the same thing, but only for the ranges within the line.
+          @addMisspellings(misspellings, row, lineRange.ranges[0], lineBeginIndex, text)
+
+          # If this line is beyond the limits of our current range, we move to
+          # the next one, otherwise we loop again to reuse this range against
+          # the next line.
+          if lineEndIndex >= range[1]
+            rangeIndex++
+          else
+            break
         else
           break
 
-      characterIndex = lineBreakIndex + 1
+      lineBeginIndex = lineEndIndex + 1
       row++
 
     # Return the resulting misspellings.
@@ -166,7 +184,7 @@ class SpellCheckerHandler
     # Return the resulting list of options.
     results
 
-  addMisspellings: (misspellings, row, range, characterIndex, text) ->
+  addMisspellings: (misspellings, row, range, lineBeginIndex, text) ->
     # Get the substring of text, if there is no space, then we can just return
     # the entire result.
     substring = text.substring(range[0], range[1])
@@ -178,17 +196,18 @@ class SpellCheckerHandler
       substringIndex = 0
       for part in parts
         if not /\s+/.test part
-          misspellings.push([
-            [row, range[0] - characterIndex + substringIndex],
-            [row, range[0] - characterIndex + substringIndex + part.length]
-          ])
+          markBeginIndex = range[0] - lineBeginIndex + substringIndex
+          markEndIndex = markBeginIndex + part.length
+          misspellings.push([[row, markBeginIndex], [row, markEndIndex]])
+
         substringIndex += part.length
+
       return
 
     # There were no spaces, so just return the entire list.
     misspellings.push([
-      [row, range[0] - characterIndex],
-      [row, range[1] - characterIndex]
+      [row, range[0] - lineBeginIndex],
+      [row, range[1] - lineBeginIndex]
     ])
 
 module.exports = SpellCheckerHandler
