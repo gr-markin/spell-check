@@ -36,9 +36,7 @@
     },
     "locales": {
       "type": "array",
-      "default": [
-        "navigator.language"
-      ],
+      "default": [],
       "items": {
         "type": "string"
       },

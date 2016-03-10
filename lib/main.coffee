@@ -81,6 +81,10 @@ module.exports =
     if not useLocales
       return
 
+    # If the locales is blank, use the default language.
+    if not locales.length
+      locales = [navigator.language]
+
     # Go through the new list and create new ones.
     paths = atom.config.get 'spell-check-test.localePaths'
     for locale in locales
