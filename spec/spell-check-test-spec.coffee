@@ -78,27 +78,6 @@ describe "Spell check", ->
       expect(misspellingMarkers.length).toBe 1
       expect(textForMarker(misspellingMarkers[0])).toBe "codez"
 
-  it "hides decorations when a misspelled word is edited", ->
-    editor.setText('notaword')
-    advanceClock(editor.getBuffer().getStoppedChangingDelay())
-    atom.config.set('spell-check-test.grammars', ['source.js'])
-
-    misspellingMarkers = null
-    waitsFor ->
-      misspellingMarkers = getMisspellingMarkers()
-      misspellingMarkers.length > 0
-
-    runs ->
-      expect(misspellingMarkers.length).toBe 1
-      editor.moveToEndOfLine()
-      editor.insertText('a')
-      advanceClock(editor.getBuffer().getStoppedChangingDelay())
-
-      misspellingMarkers = getMisspellingMarkers()
-
-      expect(misspellingMarkers.length).toBe 1
-      expect(misspellingMarkers[0].isValid()).toBe false
-
   describe "when spell checking for a grammar is removed", ->
     it "removes all the misspellings", ->
       editor.setText('notaword')
