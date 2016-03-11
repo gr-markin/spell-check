@@ -13,18 +13,18 @@ class KnownWordsChecker
     @setKnownWords knownWords
 
   deactivate: ->
-    console.log("deactivating " + @getId())
+    console.log(@getid() + "deactivating")
 
   getId: -> "spell-check:known-words"
   getName: -> "Known Words"
   getPriority: -> 10
   isEnabled: -> true
   getStatus: -> "Working correctly."
-  providesSpelling: (buffer) -> true
-  providesSuggestions: (buffer) -> true
-  providesAdding: (buffer) -> @enableAdd
+  providesSpelling: (args) -> true
+  providesSuggestions: (args) -> true
+  providesAdding: (args) -> @enableAdd
 
-  check: (buffer, text) ->
+  check: (args, text) ->
     ranges = []
     checked = @checker.check text
     for token in checked
@@ -32,19 +32,16 @@ class KnownWordsChecker
         ranges.push {start: token.start, end: token.end }
     { correct: ranges }
 
-  suggest: (buffer, word) ->
+  suggest: (args, word) ->
     @spelling.suggest word
 
-  getAddingTargets: (buffer) ->
+  getAddingTargets: (args) ->
     if @enableAdd
-      [
-        {sensitive: false, label: "Add to " + @getName() + " (case-insensitive)"},
-        {sensitive: true, label: "Add to " + @getName() + " (case-sensitive)"}
-      ]
+      [{sensitive: false, label: "Add to " + @getName()}]
     else
       []
 
-  add: (buffer, target) ->
+  add: (args, target) ->
     # Build up the pattern we'll be using. It looks better if we add it not as
     # a regular expression, so figure out how to change this.
     pattern = target.word

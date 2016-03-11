@@ -99,5 +99,17 @@ class SpellCheckView
       console.warn('Error starting spell check task', error.stack ? error)
 
   getCorrections: (marker) ->
+    # Build up the arguments object for this buffer and text.
+    projectPath = null
+    relativePath = null
+    if buffer?.file?.path
+      [projectPath, relativePath] = atom.project.relativizePath(buffer.file.path)
+    args = {
+      id: @id,
+      projectPath: projectPath,
+      relativePath: relativePath
+    }
+
+    # Get the misspelled word and then request corrections.
     misspelling = @editor.getTextInBufferRange(marker.getRange())
     corrections = @handler.suggest(@buffer, misspelling)

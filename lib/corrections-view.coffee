@@ -29,8 +29,19 @@ class CorrectionsView extends SelectListView
         @editor.setSelectedBufferRange(@marker.getRange())
         @editor.insertText(item.suggestion)
       else
+        # Build up the arguments object for this buffer and text.
+        projectPath = null
+        relativePath = null
+        if buffer?.file?.path
+          [projectPath, relativePath] = atom.project.relativizePath(buffer.file.path)
+        args = {
+          id: @id,
+          projectPath: projectPath,
+          relativePath: relativePath
+        }
+
         # Send the "add" request to the plugin.
-        item.plugin.add @editor.buffer, item
+        item.plugin.add args, item
 
   cancelled: ->
     @overlayDecoration.destroy()

@@ -10,24 +10,23 @@ class SpellCheckerHandler
   removeSpellChecker: (spellChecker) ->
     @checkers = @checkers.filter (plugin) -> plugin isnt spellChecker
 
-  check: (id, buffer) ->
+  check: (args, text) ->
     # For every registered spellchecker, we need to find out the ranges in the
     # text that the checker confirms are correct or indicates is a misspelling.
     # We keep these as separate lists since the different checkers may indicate
     # the same range for either and we need to be able to remove confirmed words
     # from the misspelled ones.
-    text = buffer.getText()
     correct = new multirange.MultiRange([])
     incorrects = []
 
     for checker in @checkers
       # We only care if this plugin contributes to checking spelling.
-      if not checker.isEnabled() or not checker.providesSpelling(buffer)
+      if not checker.isEnabled() or not checker.providesSpelling(args)
         continue
 
       # Get the results which includes positive (correct) and negative (incorrect)
       # ranges.
-      results = checker.check(buffer, text)
+      results = checker.check(args, text)
 
       if results.correct
         for range in results.correct
@@ -116,9 +115,9 @@ class SpellCheckerHandler
       row++
 
     # Return the resulting misspellings.
-    {id, misspellings}
+    {id: args.id, misspellings: misspellings}
 
-  suggest: (buffer, word) ->
+  suggest: (args, word) ->
     # Gather up a list of corrections and put them into a custom object that has
     # the priority of the plugin, the index in the results, and the word itself.
     # We use this to intersperse the results together to avoid having the
@@ -128,13 +127,13 @@ class SpellCheckerHandler
 
     for checker in @checkers
       # We only care if this plugin contributes to checking to suggestions.
-      if not checker.isEnabled() or not checker.providesSuggestions(buffer)
+      if not checker.isEnabled() or not checker.providesSuggestions(args)
         continue
 
       # Get the suggestions for this word.
       index = 0
       priority = checker.getPriority()
-      for suggestion in checker.suggest(buffer, word)
+      for suggestion in checker.suggest(args, word)
         suggestions.push { isSuggestion: true, priority: priority, index: index++, suggestion: suggestion, label: suggestion }
 
     # Once we have the suggestions, then sort them to intersperse the results.
@@ -170,11 +169,11 @@ class SpellCheckerHandler
     for key in keys
       # We only care if this plugin contributes to checking to suggestions.
       checker = @checkers[key]
-      if not checker.isEnabled() or not checker.providesAdding(buffer)
+      if not checker.isEnabled() or not checker.providesAdding(args)
         continue
 
       # Add all the targets to the list.
-      targets = checker.getAddingTargets buffer
+      targets = checker.getAddingTargets args
       for target in targets
         target.plugin = checker
         target.word = word

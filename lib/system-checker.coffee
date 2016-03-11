@@ -24,15 +24,15 @@ class SystemChecker
     else
       @reason
 
-  providesSpelling: (buffer) -> true
-  providesSuggestions: (buffer) -> true
-  providesAdding: (buffer) -> false # Users shouldn't be adding to the system dictionary.
+  providesSpelling: (args) -> true
+  providesSuggestions: (args) -> true
+  providesAdding: (args) -> false # Users shouldn't be adding to the system dictionary.
 
-  check: (buffer, text) ->
+  check: (args, text) ->
     @deferredInit()
     { incorrect: @spellchecker.checkSpelling(text) }
 
-  suggest: (buffer, word) ->
+  suggest: (args, word) ->
     @deferredInit()
     @spellchecker.getCorrectionsForMisspelling(word)
 

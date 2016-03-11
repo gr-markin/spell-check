@@ -17,7 +17,19 @@ class SpellCheckTask
       @constructor.task = null
 
   start: (buffer) ->
-    @constructor.dispatchMisspellings @handler.check(@id, buffer)
+    # Build up the arguments object for this buffer and text.
+    projectPath = null
+    relativePath = null
+    if buffer?.file?.path
+      [projectPath, relativePath] = atom.project.relativizePath(buffer.file.path)
+    args = {
+      id: @id,
+      projectPath: projectPath,
+      relativePath: relativePath
+    }
+
+    # Dispatch the request.
+    @constructor.dispatchMisspellings @handler.check(args, buffer.getText())
 
   onDidSpellCheck: (callback) ->
     @constructor.callbacksById[@id] = callback
