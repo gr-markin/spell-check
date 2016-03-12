@@ -18,12 +18,15 @@ module.exports =
     atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
       that.instance.locales = atom.config.get('spell-check-test.locales')
       that.instance.reloadLocales()
+      that.updateViews()
     atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
       that.instance.localePaths = atom.config.get('spell-check-test.localePaths')
       that.instance.reloadLocales()
+      that.updateViews()
     atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
       that.instance.useLocales = atom.config.get('spell-check-test.useLocales')
       that.instance.reloadLocales()
+      that.updateViews()
 
     # Add in the settings for known words checker.
     @instance.knownWords = atom.config.get('spell-check-test.knownWords')
@@ -32,9 +35,11 @@ module.exports =
     atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
       that.instance.knownWords = atom.config.get('spell-check-test.knownWords')
       that.instance.reloadKnownWords()
+      that.updateViews()
     atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
       that.instance.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
       that.instance.reloadKnownWords()
+      that.updateViews()
 
     # Hook up the UI and processing.
     @commandSubscription = atom.commands.add 'atom-workspace',
@@ -67,6 +72,12 @@ module.exports =
 
   misspellingMarkersForEditor: (editor) ->
     @viewsByEditor.get(editor).markerLayer.getMarkers()
+
+  updateViews: ->
+    for editorId of spellCheckViews
+      view = spellCheckViews[editorId]
+      if view['active']
+        view['view'].updateMisspellings()
 
   # Internal: Toggles the spell-check activation state.
   toggle: ->

@@ -3,7 +3,7 @@
 
 module.exports =
 class CorrectionsView extends SelectListView
-  initialize: (@editor, @corrections, @marker) ->
+  initialize: (@editor, @corrections, @marker, @updateTarget, @updateCallback) ->
     super
     @addClass('spell-check-test-corrections corrections popover-list')
     @attach()
@@ -42,6 +42,9 @@ class CorrectionsView extends SelectListView
 
         # Send the "add" request to the plugin.
         item.plugin.add args, item
+
+        # Update the buffer to handle the corrections.
+        @updateCallback.bind(@updateTarget)()
 
   cancelled: ->
     @overlayDecoration.destroy()

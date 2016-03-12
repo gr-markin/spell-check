@@ -19,7 +19,7 @@ class SpellCheckView
       if marker = @markerLayer.findMarkers({containsPoint: @editor.getCursorBufferPosition()})[0]
         CorrectionsView ?= require './corrections-view'
         @correctionsView?.destroy()
-        @correctionsView = new CorrectionsView(@editor, @getCorrections(marker), marker)
+        @correctionsView = new CorrectionsView(@editor, @getCorrections(marker), marker, this, @updateMisspellings)
 
     @task.onDidSpellCheck (misspellings) =>
       @destroyMarkers()
@@ -94,7 +94,7 @@ class SpellCheckView
   updateMisspellings: ->
     # Task::start can throw errors atom/atom#3326
     try
-      @task.start(@buffer)
+      @task.start @editor.buffer
     catch error
       console.warn('Error starting spell check task', error.stack ? error)
 

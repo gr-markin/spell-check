@@ -43,7 +43,7 @@ class KnownWordsChecker
 
   add: (args, target) ->
     c = atom.config.get 'spell-check-test.knownWords'
-    c.push pattern
+    c.push target.word
     atom.config.set 'spell-check-test.knownWords', c
 
   setAddKnownWords: (newValue) ->

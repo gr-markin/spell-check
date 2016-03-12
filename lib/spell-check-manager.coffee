@@ -269,7 +269,7 @@ class SpellCheckerManager
       console.log "spell-check-test: unloading locales"
       for localeChecker in @localeCheckers
         @removeSpellChecker localeChecker
-      @localCheckers = null
+      @localeCheckers = null
 
   reloadKnownWords: ->
     if @knownWordsChecker
