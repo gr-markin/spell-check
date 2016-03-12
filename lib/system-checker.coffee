@@ -86,6 +86,6 @@ class SystemChecker
     # If we fell through all the if blocks, then we couldn't load the dictionary.
     @enabled = false
     @reason = "Cannot find dictionary for " + @locale + "."
-    console.log @getId(), "Can't load" + @locale, @reason
+    console.log @getId(), "Can't load " + @locale + ": " + @reason
 
 module.exports = SystemChecker
