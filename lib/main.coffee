@@ -1,40 +1,42 @@
-SystemChecker = require "./system-checker"
 SpellCheckView = null
 spellCheckViews = {}
 
 module.exports =
   instance: null
-  ignore: null
-  localeDictionaries: []
 
   activate: ->
     # Create the unified handler for all spellchecking.
-    SpellCheckerHandler = require './spell-check-handler.coffee'
-    @instance = new SpellCheckerHandler
-
-    # Initialize the system dictionaries and listen to any changes.
+    SpellCheckerManager = require './spell-check-manager.coffee'
+    @instance = SpellCheckerManager
     that = this
-    that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
-    atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
-    atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
-    atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
-      that.reloadLocaleDictionaries atom.config.get('spell-check-test.locales')
 
-    # Add in the ignore dictionary.
-    KnownWordsChecker = require './known-words-checker.coffee'
-    knownWords = atom.config.get('spell-check-test.knownWords')
-    addKnownWords = atom.config.get('spell-check-test.addKnownWords')
-    @ignore = new KnownWordsChecker knownWords
-    @ignore.setAddKnownWords addKnownWords
-    @instance.addSpellChecker @ignore
+    # Initialize the spelling manager so it can perform deferred loading.
+    @instance.locales = atom.config.get('spell-check-test.locales')
+    @instance.localePaths = atom.config.get('spell-check-test.localePaths')
+    @instance.useLocales = atom.config.get('spell-check-test.useLocales')
+
+    atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
+      that.instance.locales = atom.config.get('spell-check-test.locales')
+      that.instance.reloadLocales()
+    atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
+      that.instance.localePaths = atom.config.get('spell-check-test.localePaths')
+      that.instance.reloadLocales()
+    atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
+      that.instance.useLocales = atom.config.get('spell-check-test.useLocales')
+      that.instance.reloadLocales()
+
+    # Add in the settings for known words checker.
+    @instance.knownWords = atom.config.get('spell-check-test.knownWords')
+    @instance.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
 
     atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
-      that.ignore.setKnownWords newValue
+      that.instance.knownWords = atom.config.get('spell-check-test.knownWords')
+      that.instance.reloadKnownWords()
     atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
-      that.ignore.setAddKnownWords newValue
+      that.instance.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
+      that.instance.reloadKnownWords()
 
+    # Hook up the UI and processing.
     @commandSubscription = atom.commands.add 'atom-workspace',
         'spell-check-test:toggle': => @toggle()
     @viewsByEditor = new WeakMap
@@ -62,31 +64,7 @@ module.exports =
       plugins = [ plugins ]
 
     for plugin in plugins
-      @instance.addSpellChecker(plugin)
-
-  reloadLocaleDictionaries: (locales) ->
-    console.log 'spell-check: reloading locale dictionaries', locales
-
-    # Remove any old dictionaries from the list.
-    for dict in @localeDictionaries
-      @instance.removeSpellChecker dict
-    @localeDictionaries.clear
-
-    # If we aren't using the locales, then skip it.
-    useLocales = atom.config.get 'spell-check-test.useLocales'
-    if not useLocales
-      return
-
-    # If the locales is blank, use the default language.
-    if not locales.length
-      locales = [navigator.language]
-
-    # Go through the new list and create new ones.
-    paths = atom.config.get 'spell-check-test.localePaths'
-    for locale in locales
-      checker = new SystemChecker locale, paths
-      @instance.addSpellChecker checker
-      @localeDictionaries.push checker
+      @instance.addPluginChecker plugin
 
   # Internal: Toggles the spell-check activation state.
   toggle: ->
