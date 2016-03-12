@@ -32,8 +32,8 @@ class CorrectionsView extends SelectListView
         # Build up the arguments object for this buffer and text.
         projectPath = null
         relativePath = null
-        if buffer?.file?.path
-          [projectPath, relativePath] = atom.project.relativizePath(buffer.file.path)
+        if @editor.buffer?.file?.path
+          [projectPath, relativePath] = atom.project.relativizePath(@editor.buffer.file.path)
         args = {
           id: @id,
           projectPath: projectPath,

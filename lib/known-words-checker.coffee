@@ -42,14 +42,6 @@ class KnownWordsChecker
       []
 
   add: (args, target) ->
-    # Build up the pattern we'll be using. It looks better if we add it not as
-    # a regular expression, so figure out how to change this.
-    pattern = target.word
-
-    if not target.sensitive
-      pattern = pattern.toLowerCase()
-
-    # Add it to the configuration list which will trigger a reload.
     c = atom.config.get 'spell-check-test.knownWords'
     c.push pattern
     atom.config.set 'spell-check-test.knownWords', c
