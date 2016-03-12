@@ -254,11 +254,21 @@ class SpellCheckerManager
       @knownWordsChecker.enableAdd = @addKnownWords
       @addSpellChecker @knownWordsChecker
 
+  deactivate: ->
+    @checkers = []
+    @locales = []
+    @localePaths = []
+    @useLocales=  false
+    @localeCheckers = null
+    @knownWords = []
+    @addKnownWords = false
+    @knownWordsChecker = null
+
   reloadLocales: ->
     if @localeCheckers
       console.log "spell-check-test: unloading locales"
-      for localeChecker in @localCheckers
-        @removeSpellChecker localChecker
+      for localeChecker in @localeCheckers
+        @removeSpellChecker localeChecker
       @localCheckers = null
 
   reloadKnownWords: ->
@@ -266,31 +276,6 @@ class SpellCheckerManager
       console.log "spell-check-test: unloading known words"
       @removeSpellChecker @knownWordsChecker
       @knownWordsChecker = null
-
-  reloadLocaleDictionaries: (locales) ->
-    console.log 'spell-check-test: reloading locale dictionaries', locales
-
-    # Remove any old dictionaries from the list.
-    for dict in @localeCheckers
-      @instance.removeSpellChecker dict
-    @localeCheckers.clear
-
-    # If we aren't using the locales, then skip it.
-    useLocales = atom.config.get 'spell-check-test.useLocales'
-    if not useLocales
-      return
-
-    # If the locales is blank, use the default language.
-    if not locales.length
-      locales = [navigator.language]
-
-    # Go through the new list and create new ones.
-    SystemChecker = require "./system-checker"
-    paths = atom.config.get 'spell-check-test.localePaths'
-    for locale in locales
-      checker = new SystemChecker locale, paths
-      @addSpellChecker checker
-      @localeCheckers.push checker
 
 manager = new SpellCheckerManager
 module.exports = manager

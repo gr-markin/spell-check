@@ -51,10 +51,9 @@ module.exports =
       spellCheckViews[editorId]['active'] = true
       @viewsByEditor.set(editor, spellCheckView)
 
-  misspellingMarkersForEditor: (editor) ->
-    @viewsByEditor.get(editor).markerLayer.getMarkers()
-
   deactivate: ->
+    @instance.deactivate()
+    @instance = null
     @commandSubscription.dispose()
     @commandSubscription = null
     @disposable.dispose()
@@ -65,6 +64,9 @@ module.exports =
 
     for plugin in plugins
       @instance.addPluginChecker plugin
+
+  misspellingMarkersForEditor: (editor) ->
+    @viewsByEditor.get(editor).markerLayer.getMarkers()
 
   # Internal: Toggles the spell-check activation state.
   toggle: ->
