@@ -241,13 +241,21 @@ class SpellCheckerManager
           if defaultLocale
             @locales = [defaultLocale.split('.')[0]]
 
-        # If we can't figure out the language from the process, check the browser.
+        # If we can't figure out the language from the process, check the
+        # browser. After testing this, we found that this does not reliably
+        # produce a proper IEFT tag for languages; on OS X, it was providing
+        # "English" which doesn't work with the locale selection. To avoid using
+        # it, we use some tests to make sure it "looks like" an IEFT tag.
         if not @locales.length
           defaultLocale = navigator.language
-          if defaultLocale
-            @locales = [defaultLocale]
+          if defaultLocale and defaultLocale.length is 5
+            separatorChar = defaultLocale.charAt(2)
+            if separatorChar is '_' or separatorChar is "_"
+              @locales = [defaultLocale]
 
-        # If we still can't figure it out, use US English.
+        # If we still can't figure it out, use US English. It isn't a great
+        # choice, but it is a reasonable default not to mention is can be used
+        # with the fallback path of the `spellchecker` package.
         if not @locales.length
           @locales = ['en_US']
 
