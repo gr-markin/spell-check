@@ -237,7 +237,19 @@ class SpellCheckerManager
       if @useLocales
         # If we have a blank location, use the default based on the navigator.
         if not @locales.length
-          @locales = [navigator.language]
+          defaultLocale = process.env.LANG;
+          if defaultLocale
+            @locales = [defaultLocale.split('.')[0]]
+
+        # If we can't figure out the language from the process, check the browser.
+        if not @locales.length
+          defaultLocale = navigator.language
+          if defaultLocale
+            @locales = [defaultLocale]
+
+        # If we still can't figure it out, use US English.
+        if not @locales.length
+          @locales = ['en_US']
 
         # Go through the new list and create new locale checkers.
         SystemChecker = require "./system-checker"
