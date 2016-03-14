@@ -250,7 +250,7 @@ class SpellCheckerManager
           defaultLocale = navigator.language
           if defaultLocale and defaultLocale.length is 5
             separatorChar = defaultLocale.charAt(2)
-            if separatorChar is '_' or separatorChar is "_"
+            if separatorChar is '_' or separatorChar is '-'
               @locales = [defaultLocale]
 
         # If we still can't figure it out, use US English. It isn't a great
