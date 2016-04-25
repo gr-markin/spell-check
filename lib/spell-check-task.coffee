@@ -1,4 +1,4 @@
-{ Task } = require 'atom'
+{Task} = require 'atom'
 idCounter = 0
 
 module.exports =

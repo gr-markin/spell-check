@@ -57,7 +57,7 @@ class SpellCheckerManager
     # about, so just return and stop processing.
     misspellings = []
 
-    if incorrects.length == 0
+    if incorrects.length is 0
       return {id: args.id, misspellings}
 
     # Build up an intersection of all the incorrect ranges. We only treat a word
@@ -152,7 +152,7 @@ class SpellCheckerManager
       priority = checker.getPriority()
 
       for suggestion in checker.suggest(args, word)
-        suggestions.push { isSuggestion: true, priority: priority, index: index++, suggestion: suggestion, label: suggestion }
+        suggestions.push {isSuggestion: true, priority: priority, index: index++, suggestion: suggestion, label: suggestion}
 
     # Once we have the suggestions, then sort them to intersperse the results.
     keys = Object.keys(suggestions).sort (key1, key2) ->
@@ -161,7 +161,7 @@ class SpellCheckerManager
       weight1 = value1.priority + value1.index
       weight2 = value2.priority + value2.index
 
-      if weight1 != weight2
+      if weight1 isnt weight2
         return weight1 - weight2
 
       return value1.suggestion.localeCompare(value2.suggestion)
@@ -235,9 +235,10 @@ class SpellCheckerManager
       @localeCheckers = []
 
       if @useLocales
-        # If we have a blank location, use the default based on the navigator.
+        # If we have a blank location, use the default based on the process. If
+        # set, then it will be the best language.
         if not @locales.length
-          defaultLocale = process.env.LANG;
+          defaultLocale = process.env.LANG
           if defaultLocale
             @locales = [defaultLocale.split('.')[0]]
 

@@ -28,9 +28,9 @@ class KnownWordsChecker
     ranges = []
     checked = @checker.check text
     for token in checked
-      if token.status == 1
-        ranges.push {start: token.start, end: token.end }
-    { correct: ranges }
+      if token.status is 1
+        ranges.push {start: token.start, end: token.end}
+    {correct: ranges}
 
   suggest: (args, word) ->
     @spelling.suggest word
