@@ -13,6 +13,7 @@ class SpellCheckView
   constructor: (@editor, @task) ->
     @disposables = new CompositeDisposable
     @initializeMarkerLayer()
+    @taskWrapper = new SpellCheckTask @task
 
     @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check-test:correct-misspelling', =>
       if marker = @markerLayer.findMarkers({containsBufferPosition: @editor.getCursorBufferPosition()})[0]
@@ -20,8 +21,7 @@ class SpellCheckView
         @correctionsView?.destroy()
         @correctionsView = new CorrectionsView(@editor, @getCorrections(marker), marker, this, @updateMisspellings)
 
-    @task.onDidSpellCheck (misspellings) =>
-      console.log "onDidSpellCheck", "found misspellings", misspellings
+    @taskWrapper.onDidSpellCheck (misspellings) =>
       @destroyMarkers()
       @addMarkers(misspellings) if @buffer?
 
@@ -52,7 +52,7 @@ class SpellCheckView
   destroy: ->
     @unsubscribeFromBuffer()
     @disposables.dispose()
-    @task.terminate()
+    @taskWrapper.terminate()
     @markerLayer.destroy()
     @markerLayerDecoration.destroy()
     @correctMisspellingCommand.dispose()
@@ -89,7 +89,7 @@ class SpellCheckView
   updateMisspellings: ->
     # Task::start can throw errors atom/atom#3326
     try
-      @task.start @editor.buffer
+      @taskWrapper.start @editor.buffer
     catch error
       console.warn('Error starting spell check task', error.stack ? error)
 

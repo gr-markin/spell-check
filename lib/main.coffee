@@ -1,44 +1,47 @@
+{Task} = require 'atom'
+
 SpellCheckView = null
 spellCheckViews = {}
 
 module.exports =
-  task: null
-
   activate: ->
-    # Create the unified task wrapper which is used for all checking.
-    SpellCheckTask = require './spell-check-task.coffee'
-    @task = new SpellCheckTask
+    # Set up the task for handling spell-checking in the background. This is
+    # what is actually in the background.
+    handlerFilename = require.resolve './spell-check-handler'
+    @task ?= new Task handlerFilename
 
-    # Initialize the spelling manager so it can perform deferred loading.
-    @task.args.locales = atom.config.get('spell-check-test.locales')
-    @task.args.localePaths = atom.config.get('spell-check-test.localePaths')
-    @task.args.useLocales = atom.config.get('spell-check-test.useLocales')
+    # Since the spell-checking is done on another process, we gather up all the
+    # arguments and pass them into the task. Whenever these change, we'll update
+    # the object with the parameters and resend it to the task.
+    @globalArgs = {
+      locales: atom.config.get('spell-check-test.locales'),
+      localePaths: atom.config.get('spell-check-test.localePaths'),
+      useLocales: atom.config.get('spell-check-test.useLocales'),
+      knownWords: atom.config.get('spell-check-test.knownWords'),
+      addKnownWords: atom.config.get('spell-check-test.addKnownWords')
+    }
+    @task.send {type: "global", global: @globalArgs}
 
-    atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
-      @task.args.locales = atom.config.get('spell-check-test.locales')
-      @task.reloadLocales()
-      @updateViews()
-    atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
-      @task.args.localePaths = atom.config.get('spell-check-test.localePaths')
-      @task.reloadLocales()
-      @updateViews()
-    atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
-      @task.args.useLocales = atom.config.get('spell-check-test.useLocales')
-      @task.reloadLocales()
-      @updateViews()
-
-    # Add in the settings for known words checker.
-    @task.args.knownWords = atom.config.get('spell-check-test.knownWords')
-    @task.args.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
-
-    atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
-      @task.args.knownWords = atom.config.get('spell-check-test.knownWords')
-      @task.reloadKnownWords()
-      @updateViews()
-    atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
-      @task.args.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
-      @task.reloadKnownWords()
-      @updateViews()
+    # DREM atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
+    # DREM   @task.args.locales = atom.config.get('spell-check-test.locales')
+    # DREM   @task.reloadLocales()
+    # DREM   @updateViews()
+    # DREM atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
+    # DREM   @task.args.localePaths = atom.config.get('spell-check-test.localePaths')
+    # DREM   @task.reloadLocales()
+    # DREM   @updateViews()
+    # DREM atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
+    # DREM   @task.args.useLocales = atom.config.get('spell-check-test.useLocales')
+    # DREM   @task.reloadLocales()
+    # DREM   @updateViews()
+    # DREM atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
+    # DREM   @task.args.knownWords = atom.config.get('spell-check-test.knownWords')
+    # DREM   @task.reloadKnownWords()
+    # DREM   @updateViews()
+    # DREM atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
+    # DREM   @task.args.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
+    # DREM   @task.reloadKnownWords()
+    # DREM   @updateViews()
 
     # Hook up the UI and processing.
     @commandSubscription = atom.commands.add 'atom-workspace',
