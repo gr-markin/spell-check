@@ -10,9 +10,8 @@ class SpellCheckView
   @content: ->
     @div class: 'spell-check-test'
 
-  constructor: (@editor, @handler) ->
+  constructor: (@editor, @task) ->
     @disposables = new CompositeDisposable
-    @task = new SpellCheckTask(@handler)
     @initializeMarkerLayer()
 
     @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check-test:correct-misspelling', =>
@@ -22,6 +21,7 @@ class SpellCheckView
         @correctionsView = new CorrectionsView(@editor, @getCorrections(marker), marker, this, @updateMisspellings)
 
     @task.onDidSpellCheck (misspellings) =>
+      console.log "onDidSpellCheck", "found misspellings", misspellings
       @destroyMarkers()
       @addMarkers(misspellings) if @buffer?
 

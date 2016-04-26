@@ -6,9 +6,9 @@ class SpellCheckTask
   @handler: null
   @callbacksById: {}
 
-  constructor: (handler) ->
+  constructor: ->
     @id = idCounter++
-    @handler = handler
+    @args = {}
 
   terminate: ->
     delete @constructor.callbacksById[@id]
@@ -24,38 +24,24 @@ class SpellCheckTask
     if buffer?.file?.path
       [projectPath, relativePath] = atom.project.relativizePath(buffer.file.path)
 
-    # We also need to pull out the spelling manager to we can grab fields from that.
-    instance = require('./spell-check-manager')
+    # NOTASK # We also need to pull out the spelling manager to we can grab fields from that.
+    # NOTASK instance = require('./spell-check-manager')
 
     # Create an arguments that passes everything over. Since tasks are run in a
     # separate background process, they can't use the initialized values from
     # our instance and buffer. We also can't pass complex items across since
     # they are serialized as JSON.
-    args = {
-      id: @id,
-      projectPath: projectPath,
-      relativePath: relativePath,
-      locales: instance.locales,
-      localePaths: instance.localePaths,
-      useLocales: instance.useLocales,
-      knownWords: instance.knownWords,
-      addKnownWords: instance.addKnownWords
-    }
     text = buffer.getText()
 
-    # At the moment, we are having some trouble passing the external plugins
-    # over to a Task. So, we do this inline for the time being.
-    # # Dispatch the request.
-    # handlerFilename = require.resolve './spell-check-handler'
-    # @constructor.task ?= new Task handlerFilename
-    # @constructor.task?.start {args, text}, @constructor.dispatchMisspellings
-
-    # Call the checking in a blocking manner.
-    data = instance.check args, text
-    @constructor.dispatchMisspellings data
+    # Set up the task for handling spell-checking in the background. This is
+    # what is actually in the background.
+    handlerFilename = require.resolve './spell-check-handler'
+    @constructor.task ?= new Task handlerFilename
+    @constructor.task?.start {@id, @args, text}, @constructor.dispatchMisspellings
 
   onDidSpellCheck: (callback) ->
     @constructor.callbacksById[@id] = callback
 
   @dispatchMisspellings: (data) =>
+    console.log "dispatchMispellings", data
     @callbacksById[data.id]?(data.misspellings)
