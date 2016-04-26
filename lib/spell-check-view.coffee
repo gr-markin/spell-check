@@ -16,7 +16,7 @@ class SpellCheckView
     @initializeMarkerLayer()
 
     @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check-test:correct-misspelling', =>
-      if marker = @markerLayer.findMarkers({containsPoint: @editor.getCursorBufferPosition()})[0]
+      if marker = @markerLayer.findMarkers({containsBufferPosition: @editor.getCursorBufferPosition()})[0]
         CorrectionsView ?= require './corrections-view'
         @correctionsView?.destroy()
         @correctionsView = new CorrectionsView(@editor, @getCorrections(marker), marker, this, @updateMisspellings)
@@ -42,7 +42,7 @@ class SpellCheckView
     @disposables.add @editor.onDidDestroy(@destroy.bind(this))
 
   initializeMarkerLayer: ->
-    @markerLayer = @editor.getBuffer().addMarkerLayer()
+    @markerLayer = @editor.addMarkerLayer({maintainHistory: false})
     @markerLayerDecoration = @editor.decorateMarkerLayer(@markerLayer, {
       type: 'highlight',
       class: 'spell-check-test-misspelling',
@@ -84,12 +84,7 @@ class SpellCheckView
 
   addMarkers: (misspellings) ->
     for misspelling in misspellings
-      @markerLayer.markRange(misspelling,
-        invalidate: 'touch',
-        replicate: 'false',
-        persistent: false,
-        maintainHistory: false,
-      )
+      @markerLayer.markBufferRange(misspelling, {invalidate: 'touch'})
 
   updateMisspellings: ->
     # Task::start can throw errors atom/atom#3326
@@ -110,5 +105,5 @@ class SpellCheckView
     }
 
     # Get the misspelled word and then request corrections.
-    misspelling = @editor.getTextInBufferRange marker.getRange()
+    misspelling = @editor.getTextInBufferRange marker.getBufferRange()
     corrections = @handler.suggest args, misspelling
