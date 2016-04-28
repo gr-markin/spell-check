@@ -49,7 +49,12 @@ module.exports =
     @viewsByEditor = new WeakMap
     @disposable = atom.workspace.observeTextEditors (editor) =>
       SpellCheckView ?= require './spell-check-view'
-      spellCheckView = new SpellCheckView(editor, @task)
+
+      # The SpellCheckView needs both a handle for the task to handle the
+      # background checking and a cached view of the in-process manager for
+      # getting corrections. We used a function to a function because scope
+      # wasn't working properly.
+      spellCheckView = new SpellCheckView(editor, @task, () => @getInstance @globalArgs)
 
       # save the {editor} into a map
       editorId = editor.id
@@ -80,6 +85,15 @@ module.exports =
       view = spellCheckViews[editorId]
       if view['active']
         view['view'].updateMisspellings()
+
+  # Retrieves, creating if required, a spelling manager for use with synchronous
+  # operations such as retrieving corrections.
+  getInstance: (globalArgs) ->
+    if not @instance
+      SpellCheckerManager = require './spell-check-manager.coffee'
+      @instance = SpellCheckerManager
+      @instance.setGlobalArgs globalArgs
+    return @instance
 
   # Internal: Toggles the spell-check activation state.
   toggle: ->

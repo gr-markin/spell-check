@@ -10,7 +10,7 @@ class SpellCheckView
   @content: ->
     @div class: 'spell-check-test'
 
-  constructor: (@editor, @task) ->
+  constructor: (@editor, @task, @getInstance) ->
     @disposables = new CompositeDisposable
     @initializeMarkerLayer()
     @taskWrapper = new SpellCheckTask @task
@@ -105,5 +105,6 @@ class SpellCheckView
     }
 
     # Get the misspelled word and then request corrections.
+    instance = @getInstance()
     misspelling = @editor.getTextInBufferRange marker.getBufferRange()
-    corrections = @handler.suggest args, misspelling
+    corrections = instance.suggest args, misspelling

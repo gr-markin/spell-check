@@ -8,6 +8,13 @@ class SpellCheckerManager
   addKnownWords: false
   knownWordsChecker: null
 
+  setGlobalArgs: (data) ->
+    @locales = data.locales
+    @localePaths = data.localePaths
+    @useLocales = data.useLocales
+    @knownWords = data.knownWords
+    @addKnownWords = data.addKnownWords
+
   addPluginChecker: (checker) ->
     console.log "spell-check-test: addPluginChecker:", checker
     @addSpellChecker checker

@@ -20,11 +20,7 @@ process.on "message", (message) =>
 # This handles updating the global configuration settings for
 # `spell-check-test` along with the built-in checkers (locale and knownWords).
 loadGlobalSettings = (data) ->
-  instance.locales = data.locales
-  instance.localePaths = data.localePaths
-  instance.useLocales = data.useLocales
-  instance.knownWords = data.knownWords
-  instance.addKnownWords = data.addKnownWords
+  instance.setGlobalArgs data
 
 # This is the function that is called by the views whenever data changes. It
 # returns with the misspellings along with an identifier that will let the task
