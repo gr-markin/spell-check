@@ -18,7 +18,8 @@ module.exports =
       localePaths: atom.config.get('spell-check-test.localePaths'),
       useLocales: atom.config.get('spell-check-test.useLocales'),
       knownWords: atom.config.get('spell-check-test.knownWords'),
-      addKnownWords: atom.config.get('spell-check-test.addKnownWords')
+      addKnownWords: atom.config.get('spell-check-test.addKnownWords'),
+      checkerPaths: []
     }
     @task.send {type: "global", global: @globalArgs}
 
@@ -61,21 +62,33 @@ module.exports =
       spellCheckViews[editorId] = {}
       spellCheckViews[editorId]['view'] = spellCheckView
       spellCheckViews[editorId]['active'] = true
-      @viewsByEditor.set(editor, spellCheckView)
+      @viewsByEditor.set editor, spellCheckView
 
   deactivate: ->
-    @instance.deactivate()
+    @instance?.deactivate()
+    @task?.terminate()
     @task = null
     @commandSubscription.dispose()
     @commandSubscription = null
     @disposable.dispose()
 
-  consumeSpellCheckers: (plugins) ->
-    unless plugins instanceof Array
-      plugins = [ plugins ]
+  # Registers any Atom packages that provide our service. Because we use a Task,
+  # we have to load the plugin's checker in both that service and in the Atom
+  # process (for coming up with corrections). Since everything passed to the
+  # task must be JSON serialized, we pass the full path to the task and let it
+  # require it on that end.
+  consumeSpellCheckers: (checkerPaths) ->
+    # Normalize it so we always have an array.
+    unless checkerPaths instanceof Array
+      checkerPaths = [ checkerPaths ]
 
-    # DREM for plugin in plugins
-      # DREM @instance.addPluginChecker plugin
+    # Go through and add any new plugins to the list.
+    changed = false
+    for checkerPath in checkerPaths
+      if checkerPath not in @globalArgs.checkerPaths
+        @task?.send {type: "checker", checkerPath: checkerPath}
+        @instance?.addCheckerPath checkerPath
+        @globalArgs.checkerPaths.push checkerPath
 
   misspellingMarkersForEditor: (editor) ->
     @viewsByEditor.get(editor).markerLayer.getMarkers()
@@ -93,6 +106,10 @@ module.exports =
       SpellCheckerManager = require './spell-check-manager.coffee'
       @instance = SpellCheckerManager
       @instance.setGlobalArgs globalArgs
+
+      for checkerPath in globalArgs.checkerPath
+        @instance.addCheckerPath checkerPath
+
     return @instance
 
   # Internal: Toggles the spell-check activation state.

@@ -1,5 +1,6 @@
 class SpellCheckerManager
   checkers: []
+  checkerPaths: []
   locales: []
   localePaths: []
   useLocales: false
@@ -9,11 +10,17 @@ class SpellCheckerManager
   knownWordsChecker: null
 
   setGlobalArgs: (data) ->
+    # Set the simple variables first.
     @locales = data.locales
     @localePaths = data.localePaths
     @useLocales = data.useLocales
     @knownWords = data.knownWords
     @addKnownWords = data.addKnownWords
+
+  addCheckerPath: (checkerPath) ->
+    checker = require checkerPath
+    console.log "spell-check-test: addCheckerPath:", checkerPath, checker
+    @addPluginChecker checker
 
   addPluginChecker: (checker) ->
     console.log "spell-check-test: addPluginChecker:", checker

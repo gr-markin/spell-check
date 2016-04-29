@@ -15,6 +15,7 @@ instance = SpellCheckerManager
 process.on "message", (message) =>
   switch
     when message.type is "global" then loadGlobalSettings message.global
+    when message.type is "checker" then instance.addCheckerPath message.checkerPath
     # Quietly ignore unknown message types.
 
 # This handles updating the global configuration settings for

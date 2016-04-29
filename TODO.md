@@ -5,3 +5,8 @@ we removed this from the constructor.
     if Object.keys(@constructor.callbacksById).length is 0
       @constructor.task?.terminate()
       @constructor.task = null
+
+* Updating configuration options should modify both in- and task processes.
+* Get plugins working again.
+* Change to be word-based searching.
+* Loading a plugin doesn't recheck the document

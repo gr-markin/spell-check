@@ -45,7 +45,7 @@ The `spell-check` allows for additional dictionaries to be used at the same time
 The `nameOfFunctionToProvideSpellCheck` function may return either a single object describing the spell-check plugin or an array of them. Each spell-check plugin must implement the following:
 
 * getId(): string
-    * This returns the canonical identifier for this plugin. Typically, this will be the package name with an optional suffix for options, such as `spell-check-project` or `spell-check:en-US`. This identifier will be used for some control plugins (such as `spell-check-project`) to enable or disable the plugin.
+    * This returns the canonical identifier for this plugin. Typically, this will be the package name with an optional suffix for options, such as `spell-check-project` or `spell-check:en-US`. This identifier will be used for some control plugins (such as `spell-check-project`) to enable or disable the plugin. This is also used to pass information from the Atom process into the background task.
 * getName(): string
     * Returns the human-readable name for the plugin. This is used on the status screen and in various dialogs/popups.
 * getPriority(): number
