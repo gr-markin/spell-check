@@ -107,7 +107,7 @@ module.exports =
       @instance = SpellCheckerManager
       @instance.setGlobalArgs globalArgs
 
-      for checkerPath in globalArgs.checkerPath
+      for checkerPath in globalArgs.checkerPaths
         @instance.addCheckerPath checkerPath
 
     return @instance

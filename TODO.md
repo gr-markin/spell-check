@@ -7,6 +7,6 @@ we removed this from the constructor.
       @constructor.task = null
 
 * Updating configuration options should modify both in- and task processes.
-* Get plugins working again.
 * Change to be word-based searching.
-* Loading a plugin doesn't recheck the document
+* Loading a plugin doesn't recheck the document.
+* Plugins sending responses to the task.
