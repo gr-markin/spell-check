@@ -147,7 +147,38 @@ class SpellCheckerManager
         startSearch = tokenIndex + token.length;
         words.push { word: token, start: tokenIndex, end: startSearch, t: line.substring(tokenIndex, startSearch) }
 
-      console.log "words", words
+      # We have a collection of words with their position. The next step is to
+      # gather up all the tokens that aren't in the cache into an arrow so we
+      # can send them to the checkers.
+      unknownWords = []
+      for word in words
+        # See if we are in the cache, if so, then skip it. This applies even to
+        # the second occurance of a new word because we'll be processing them
+        # in sequence and it will be resolved properly.
+        if word.word in cache
+          continue
+
+        # Cache a null so we don't duplciate and push the word into what we will
+        # request from the checkers.
+        cache[word.word] = null
+        unknownWords.push word
+
+      console.log "unknownWords", unknownWords
+
+      # If we have unknown words, we need to pass it into the checkers.
+      for word in unknownWords
+        # TODO These are marked as invalid (false) verses correct (true) or
+        # unknown (null).
+        cache[word.word] = false
+
+      # Go through the list of words again, this time adding misspellings to
+      # the resulting list.
+      for word in words
+        # The results will always be in the cache because of the block above us.
+        isCorrect = cache[word.word]
+
+        if not isCorrect
+          misspellings.push([[row, word.start], [row, word.end]])
 
       # Move to the next line
       lineBeginIndex = lineEndIndex + 1
