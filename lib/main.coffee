@@ -21,28 +21,28 @@ module.exports =
       addKnownWords: atom.config.get('spell-check-test.addKnownWords'),
       checkerPaths: []
     }
-    @task.send {type: "global", global: @globalArgs}
+    @sendGlobalArgs()
 
-    # DREM atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
-    # DREM   @task.args.locales = atom.config.get('spell-check-test.locales')
-    # DREM   @task.reloadLocales()
-    # DREM   @updateViews()
-    # DREM atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
-    # DREM   @task.args.localePaths = atom.config.get('spell-check-test.localePaths')
-    # DREM   @task.reloadLocales()
-    # DREM   @updateViews()
-    # DREM atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
-    # DREM   @task.args.useLocales = atom.config.get('spell-check-test.useLocales')
-    # DREM   @task.reloadLocales()
-    # DREM   @updateViews()
-    # DREM atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
-    # DREM   @task.args.knownWords = atom.config.get('spell-check-test.knownWords')
-    # DREM   @task.reloadKnownWords()
-    # DREM   @updateViews()
-    # DREM atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
-    # DREM   @task.args.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
-    # DREM   @task.reloadKnownWords()
-    # DREM   @updateViews()
+    atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
+      @globalArgs.locales = atom.config.get('spell-check-test.locales')
+      @sendGlobalArgs()
+      @updateViews()
+    atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
+      @globalArgs.localePaths = atom.config.get('spell-check-test.localePaths')
+      @sendGlobalArgs()
+      @updateViews()
+    atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
+      @globalArgs.useLocales = atom.config.get('spell-check-test.useLocales')
+      @sendGlobalArgs()
+      @updateViews()
+    atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
+      @globalArgs.knownWords = atom.config.get('spell-check-test.knownWords')
+      @sendGlobalArgs()
+      @updateViews()
+    atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
+      @globalArgs.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
+      @sendGlobalArgs()
+      @updateViews()
 
     # Hook up the UI and processing.
     @commandSubscription = atom.commands.add 'atom-workspace',
@@ -89,6 +89,10 @@ module.exports =
         @task?.send {type: "checker", checkerPath: checkerPath}
         @instance?.addCheckerPath checkerPath
         @globalArgs.checkerPaths.push checkerPath
+        changed = true
+
+    if changed
+      @updateViews()
 
   misspellingMarkersForEditor: (editor) ->
     @viewsByEditor.get(editor).markerLayer.getMarkers()
@@ -98,6 +102,10 @@ module.exports =
       view = spellCheckViews[editorId]
       if view['active']
         view['view'].updateMisspellings()
+
+  sendGlobalArgs: ->
+    console.log "sendGlobalArgs", @task, @globalArgs
+    @task.send {type: "global", global: @globalArgs}
 
   # Retrieves, creating if required, a spelling manager for use with synchronous
   # operations such as retrieving corrections.
