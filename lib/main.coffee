@@ -10,6 +10,12 @@ module.exports =
     handlerFilename = require.resolve './spell-check-handler'
     @task ?= new Task handlerFilename
 
+    # Set up our callback to track when settings changed.
+    that = this
+    @task.on "spell-check-test:settings-changed", () ->
+      console.log("updating views because of change", that)
+      that.updateViews()
+
     # Since the spell-checking is done on another process, we gather up all the
     # arguments and pass them into the task. Whenever these change, we'll update
     # the object with the parameters and resend it to the task.
@@ -24,25 +30,20 @@ module.exports =
     @sendGlobalArgs()
 
     atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
-      @globalArgs.locales = atom.config.get('spell-check-test.locales')
-      @sendGlobalArgs()
-      @updateViews()
+      that.globalArgs.locales = atom.config.get('spell-check-test.locales')
+      that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
-      @globalArgs.localePaths = atom.config.get('spell-check-test.localePaths')
-      @sendGlobalArgs()
-      @updateViews()
+      that.globalArgs.localePaths = atom.config.get('spell-check-test.localePaths')
+      that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
-      @globalArgs.useLocales = atom.config.get('spell-check-test.useLocales')
-      @sendGlobalArgs()
-      @updateViews()
+      that.globalArgs.useLocales = atom.config.get('spell-check-test.useLocales')
+      that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
-      @globalArgs.knownWords = atom.config.get('spell-check-test.knownWords')
-      @sendGlobalArgs()
-      @updateViews()
+      that.globalArgs.knownWords = atom.config.get('spell-check-test.knownWords')
+      that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
-      @globalArgs.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
-      @sendGlobalArgs()
-      @updateViews()
+      that.globalArgs.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
+      that.sendGlobalArgs()
 
     # Hook up the UI and processing.
     @commandSubscription = atom.commands.add 'atom-workspace',
@@ -91,9 +92,6 @@ module.exports =
         @globalArgs.checkerPaths.push checkerPath
         changed = true
 
-    if changed
-      @updateViews()
-
   misspellingMarkersForEditor: (editor) ->
     @viewsByEditor.get(editor).markerLayer.getMarkers()
 
@@ -104,7 +102,6 @@ module.exports =
         view['view'].updateMisspellings()
 
   sendGlobalArgs: ->
-    console.log "sendGlobalArgs", @task, @globalArgs
     @task.send {type: "global", global: @globalArgs}
 
   # Retrieves, creating if required, a spelling manager for use with synchronous

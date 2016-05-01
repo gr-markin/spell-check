@@ -10,12 +10,59 @@ class SpellCheckerManager
   knownWordsChecker: null
 
   setGlobalArgs: (data) ->
-    # Set the simple variables first.
-    @locales = data.locales
-    @localePaths = data.localePaths
-    @useLocales = data.useLocales
-    @knownWords = data.knownWords
-    @addKnownWords = data.addKnownWords
+    # We need underscore to do the array comparisons.
+    _ = require "underscore-plus"
+
+    # Check to see if any values have changed. When they have, they clear out
+    # the applicable checker which forces a reload.
+    changed = false
+    removeLocaleCheckers = false
+    removeKnownWordsChecker = false
+
+    if not _.isEqual(@locales, data.locales)
+      # If the locales is blank, then we always create a default one. However,
+      # any new data.locales will remain blank.
+      if not @localeCheckers or data.locales?.length isnt 0
+        @locales = data.locales
+        removeLocaleCheckers = true
+    if not _.isEqual(@localePaths, data.localePaths)
+      @localePaths = data.localePaths
+      removeLocaleCheckers = true
+    if @useLocales isnt data.useLocales
+      @useLocales = data.useLocales
+      removeLocaleCheckers = true
+    if @knownWords isnt data.knownWords
+      @knownWords = data.knownWords
+      removeKnownWordsChecker = true
+      changed = true
+    if @addKnownWords isnt data.addKnownWords
+      @addKnownWords = data.addKnownWords
+      removeKnownWordsChecker = true
+      # We don't update `changed` since it doesn't affect the plugins.
+
+    # If we made a change to the checkers, we need to remove them from the
+    # system so they can be reinitialized.
+    if removeLocaleCheckers and @localeCheckers
+      checkers = @localeCheckers
+      for checker in checkers
+        @removeSpellChecker @checker
+      @localeCheckers = null
+      changed = true
+
+    if removeKnownWordsChecker and @knownWordsChecker
+      @removeSpellChecker @knownWordsChecker
+      @knownWordsChecker = null
+      changed = true
+
+    # If we had any change to the system, we need to send a message back to the
+    # main process so it can trigger a recheck which then calls `init` which
+    # then locales any changed locales or known words checker.
+    if changed
+      @emitSettingsChanged()
+
+  emitSettingsChanged: ->
+    console.log "sending change"
+    emit("spell-check-test:settings-changed")
 
   addCheckerPath: (checkerPath) ->
     checker = require checkerPath
@@ -23,8 +70,13 @@ class SpellCheckerManager
     @addPluginChecker checker
 
   addPluginChecker: (checker) ->
-    console.log "spell-check-test: addPluginChecker:", checker
+    # Add the spell checker to the list.
     @addSpellChecker checker
+
+    # We only emit a settings change for plugins since the core checkers are
+    # handled in a different manner.
+    @emitSettingsChanged()
+
   addSpellChecker: (checker) ->
     console.log "spell-check-test: addSpellChecker:", checker
     @checkers.push checker
@@ -283,7 +335,7 @@ class SpellCheckerManager
 
     # See if we need to reload the known words.
     if @knownWordsChecker is null
-      console.log "spell-check-test: loading known words"
+      console.log "spell-check-test: loading known words", @knownWords
       KnownWordsChecker = require './known-words-checker.coffee'
       @knownWordsChecker = new KnownWordsChecker @knownWords
       @knownWordsChecker.enableAdd = @addKnownWords

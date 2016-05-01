@@ -6,7 +6,5 @@ we removed this from the constructor.
       @constructor.task?.terminate()
       @constructor.task = null
 
-* Updating configuration options should modify both in- and task processes.
-    * Updating configurations in general.
 * Change to be word-based searching.
-* Plugins sending responses to the task.
+* Plugins sending responses/changes to the task.
