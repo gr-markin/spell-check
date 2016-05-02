@@ -133,11 +133,12 @@ class SpellCheckerManager
 
       # Loop through the tokens and process each one that looks like a word. We
       # build up a list of every word (token) and its position within the line.
-      startIndex = 0
+      startSearch = 0
       words = []
       for token in tokens
         # If we don't have at least one character, skip it.
         if not /\w/.test(token)
+          startSearch += token.length
           continue
 
         # Figure out where this token appears in the buffer. We have to do this
