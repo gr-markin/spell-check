@@ -2,6 +2,7 @@
 # throughout the life of the task.
 SpellCheckerManager = require './spell-check-manager.coffee'
 instance = SpellCheckerManager
+instance.isTask = true
 
 # Because of the heavy use of configuration options for the packages and our
 # inability to listen/access config settings from this process, we need to get

@@ -8,6 +8,7 @@ class SpellCheckerManager
   knownWords: []
   addKnownWords: false
   knownWordsChecker: null
+  isTask: false
 
   setGlobalArgs: (data) ->
     # We need underscore to do the array comparisons.
@@ -61,8 +62,8 @@ class SpellCheckerManager
       @emitSettingsChanged()
 
   emitSettingsChanged: ->
-    console.log "sending change"
-    emit("spell-check-test:settings-changed")
+    if @isTask
+      emit("spell-check-test:settings-changed")
 
   addCheckerPath: (checkerPath) ->
     checker = require checkerPath
@@ -129,7 +130,6 @@ class SpellCheckerManager
       # Grab the next line from the text buffer and split it into tokens.
       line = text.substring lineBeginIndex, lineEndIndex
       tokens = tokenizer.tokenize line
-      console.log "check row", row, line
 
       # Loop through the tokens and process each one that looks like a word. We
       # build up a list of every word (token) and its position within the line.
@@ -161,15 +161,11 @@ class SpellCheckerManager
         # Cache a null so we don't duplciate and push the word into what we will
         # request from the checkers.
         cache[word.word] = null
-        unknownWords.push word
+        unknownWords.push word.word
 
-      console.log "unknownWords", unknownWords
-
-      # If we have unknown words, we need to pass it into the checkers.
-      for word in unknownWords
-        # TODO These are marked as invalid (false) verses correct (true) or
-        # unknown (null).
-        cache[word.word] = false
+      # If we have unknown words, we need to pass it into the checkers. This
+      # will populate the cache object with the answers.
+      @checkWords args, unknownWords, cache
 
       # Go through the list of words again, this time adding misspellings to
       # the resulting list.
@@ -177,7 +173,7 @@ class SpellCheckerManager
         # The results will always be in the cache because of the block above us.
         isCorrect = cache[word.word]
 
-        if not isCorrect
+        if isCorrect is false
           misspellings.push([[row, word.start], [row, word.end]])
 
       # Move to the next line
@@ -185,8 +181,35 @@ class SpellCheckerManager
       row++
 
     # Return the resulting misspellings.
-    console.log "done", misspellings
     {id: args.id, misspellings: misspellings}
+
+  checkWords: (args, words, cache) ->
+    # If we have an empty list, then don't bother.
+    if words.length is 0
+      return
+
+    # Go through the active checkers and verify the list against each one.
+    for checker in @checkers
+      # We only care if this plugin contributes to checking spelling.
+      if not checker.isEnabled() or not checker.providesSpelling(args)
+        continue
+
+      # Get the results from the checker. We pass in a list of words and we get
+      # an array of results back. For each one, it is either `false` for
+      # incorrect, `true` for correct, or `null` for no opinion.
+      results = checker.checkArray args, words
+
+      # Go through the results and merge them. `false` and `true` both override
+      # `null`; `true` overrides everything.
+      for result, index in results
+        word = words[index]
+        cache[word] = switch
+          when result is true or cache[word] is true
+            true
+          when result is false
+            false
+          else
+            cache[word]
 
   suggest: (args, word) ->
     # Make sure our deferred initialization is done.
