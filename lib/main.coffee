@@ -66,11 +66,19 @@ module.exports =
       @viewsByEditor.set editor, spellCheckView
 
   deactivate: ->
+    console.log "spell-check-test: deactiving"
     @instance?.deactivate()
+    @instance = null
     @task?.terminate()
     @task = null
     @commandSubscription.dispose()
     @commandSubscription = null
+
+    # While we have WeakMap.clear, it isn't a function available in ES6. So, we
+    # just replace the WeakMap entirely and let the system release the objects.
+    @viewsByEditor = new WeakMap
+
+    # Finish up by disposing everything else associated with the plugin.
     @disposable.dispose()
 
   # Registers any Atom packages that provide our service. Because we use a Task,
