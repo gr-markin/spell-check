@@ -33,17 +33,6 @@ class SystemChecker
     @deferredInit()
     {incorrect: @spellchecker.checkSpelling(text)}
 
-  checkArray: (args, words) ->
-    @deferredInit()
-    results = []
-    for word, index in words
-      result = @check args, word
-      if result.incorrect.length is 0
-        results.push null
-      else
-        results.push false
-    results
-
   suggest: (args, word) ->
     @deferredInit()
     @spellchecker.getCorrectionsForMisspelling(word)

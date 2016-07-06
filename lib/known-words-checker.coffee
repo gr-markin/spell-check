@@ -33,16 +33,6 @@ class KnownWordsChecker
         ranges.push {start: token.start, end: token.end}
     {correct: ranges}
 
-  checkArray: (args, words) ->
-    results = []
-    for word, index in words
-      result = @check args, word
-      if result.correct.length is 0
-        results.push null
-      else
-        results.push true
-    results
-
   suggest: (args, word) ->
     @spelling.suggest word
 
