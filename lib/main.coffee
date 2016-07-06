@@ -13,7 +13,6 @@ module.exports =
     # Set up our callback to track when settings changed.
     that = this
     @task.on "spell-check-test:settings-changed", () ->
-      console.log("updating views because of change", that)
       that.updateViews()
 
     # Since the spell-checking is done on another process, we gather up all the
