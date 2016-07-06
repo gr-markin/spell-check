@@ -63,11 +63,11 @@ class SpellCheckerManager
 
   emitSettingsChanged: ->
     if @isTask
-      emit("spell-check-test:settings-changed")
+      emit("spell-check:settings-changed")
 
   addCheckerPath: (checkerPath) ->
     checker = require checkerPath
-    console.log "spell-check-test: addCheckerPath:", checkerPath, checker
+    console.log "spell-check: addCheckerPath:", checkerPath, checker
     @addPluginChecker checker
 
   addPluginChecker: (checker) ->
@@ -79,7 +79,7 @@ class SpellCheckerManager
     @emitSettingsChanged()
 
   addSpellChecker: (checker) ->
-    console.log "spell-check-test: addSpellChecker:", checker
+    console.log "spell-check: addSpellChecker:", checker
     @checkers.push checker
 
   removeSpellChecker: (spellChecker) ->
@@ -102,7 +102,7 @@ class SpellCheckerManager
     # dependent. Until we have the ability to have a language-specific setting
     # or services, we use a generic method.
     natural = require "natural"
-    tokenizer = new natural.RegexpTokenizer { pattern: wRegex }
+    tokenizer = new natural.RegexpTokenizer {pattern: wRegex}
 
     # We have a small local cache here. Because of how the checkers work today,
     # if "baz" is wrong in one place, it will be wrong in the entire document.
@@ -144,9 +144,9 @@ class SpellCheckerManager
         # Figure out where this token appears in the buffer. We have to do this
         # since we'll be skipping over whitespace and non-word tokens. Once we
         # have the components, add it to the list.
-        tokenIndex = line.indexOf token, startSearch;
-        startSearch = tokenIndex + token.length;
-        words.push { word: token, start: tokenIndex, end: startSearch, t: line.substring(tokenIndex, startSearch) }
+        tokenIndex = line.indexOf token, startSearch
+        startSearch = tokenIndex + token.length
+        words.push {word: token, start: tokenIndex, end: startSearch, t: line.substring(tokenIndex, startSearch)}
 
       # We have a collection of words with their position. The next step is to
       # gather up all the tokens that aren't in the cache into an arrow so we
@@ -312,7 +312,7 @@ class SpellCheckerManager
     # See if we need to initialize the system checkers.
     if @localeCheckers is null
       # Initialize the collection. If we aren't using any, then stop doing anything.
-      console.log "spell-check-test: loading locales", @useLocales, @locales
+      console.log "spell-check: loading locales", @useLocales, @locales
       @localeCheckers = []
 
       if @useLocales
@@ -350,7 +350,7 @@ class SpellCheckerManager
 
     # See if we need to reload the known words.
     if @knownWordsChecker is null
-      console.log "spell-check-test: loading known words", @knownWords
+      console.log "spell-check: loading known words", @knownWords
       KnownWordsChecker = require './known-words-checker.coffee'
       @knownWordsChecker = new KnownWordsChecker @knownWords
       @knownWordsChecker.enableAdd = @addKnownWords
@@ -368,14 +368,14 @@ class SpellCheckerManager
 
   reloadLocales: ->
     if @localeCheckers
-      console.log "spell-check-test: unloading locales"
+      console.log "spell-check: unloading locales"
       for localeChecker in @localeCheckers
         @removeSpellChecker localeChecker
       @localeCheckers = null
 
   reloadKnownWords: ->
     if @knownWordsChecker
-      console.log "spell-check-test: unloading known words"
+      console.log "spell-check: unloading known words"
       @removeSpellChecker @knownWordsChecker
       @knownWordsChecker = null
 
@@ -383,5 +383,5 @@ manager = new SpellCheckerManager
 module.exports = manager
 
 #    KnownWordsChecker = require './known-words-checker.coffee'
-#    knownWords = atom.config.get('spell-check-test.knownWords')
-#    addKnownWords = atom.config.get('spell-check-test.addKnownWords')
+#    knownWords = atom.config.get('spell-check.knownWords')
+#    addKnownWords = atom.config.get('spell-check.addKnownWords')
