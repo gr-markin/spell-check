@@ -30,19 +30,19 @@ module.exports =
     @sendGlobalArgs()
 
     atom.config.onDidChange 'spell-check-test.locales', ({newValue, oldValue}) ->
-      that.globalArgs.locales = atom.config.get('spell-check-test.locales')
+      that.globalArgs.locales = newValue
       that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.localePaths', ({newValue, oldValue}) ->
-      that.globalArgs.localePaths = atom.config.get('spell-check-test.localePaths')
+      that.globalArgs.localePaths = newValue
       that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.useLocales', ({newValue, oldValue}) ->
-      that.globalArgs.useLocales = atom.config.get('spell-check-test.useLocales')
+      that.globalArgs.useLocales = newValue
       that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.knownWords', ({newValue, oldValue}) ->
-      that.globalArgs.knownWords = atom.config.get('spell-check-test.knownWords')
+      that.globalArgs.knownWords = newValue
       that.sendGlobalArgs()
     atom.config.onDidChange 'spell-check-test.addKnownWords', ({newValue, oldValue}) ->
-      that.globalArgs.addKnownWords = atom.config.get('spell-check-test.addKnownWords')
+      that.globalArgs.addKnownWords = newValue
       that.sendGlobalArgs()
 
     # Hook up the UI and processing.

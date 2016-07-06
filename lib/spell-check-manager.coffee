@@ -46,7 +46,7 @@ class SpellCheckerManager
     if removeLocaleCheckers and @localeCheckers
       checkers = @localeCheckers
       for checker in checkers
-        @removeSpellChecker @checker
+        @removeSpellChecker checker
       @localeCheckers = null
       changed = true
 
@@ -63,11 +63,10 @@ class SpellCheckerManager
 
   emitSettingsChanged: ->
     if @isTask
-      emit("spell-check:settings-changed")
+      emit("spell-check-test:settings-changed")
 
   addCheckerPath: (checkerPath) ->
     checker = require checkerPath
-    console.log "spell-check: addCheckerPath:", checkerPath, checker
     @addPluginChecker checker
 
   addPluginChecker: (checker) ->
@@ -79,7 +78,6 @@ class SpellCheckerManager
     @emitSettingsChanged()
 
   addSpellChecker: (checker) ->
-    console.log "spell-check: addSpellChecker:", checker
     @checkers.push checker
 
   removeSpellChecker: (spellChecker) ->
