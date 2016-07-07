@@ -99,9 +99,13 @@ class SpellCheckerManager
     incorrects = []
 
     for checker in @checkers
+      console.log "enabled", checker.getId(), checker.isEnabled()
+
       # We only care if this plugin contributes to checking spelling.
       if not checker.isEnabled() or not checker.providesSpelling(args)
         continue
+
+      console.log "checking", checker.getId()
 
       # Get the results which includes positive (correct) and negative (incorrect)
       # ranges.
@@ -139,7 +143,7 @@ class SpellCheckerManager
       if intersection is null
         intersection = incorrect
       else
-        intersection.intersect(incorrects[index])
+        intersection.append(incorrect)
 
     # If we have no intersection, then nothing to report as a problem.
     if intersection.length is 0

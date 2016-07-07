@@ -19,7 +19,7 @@ class KnownWordsChecker
   getId: -> "spell-check:known-words"
   getName: -> "Known Words"
   getPriority: -> 10
-  isEnabled: -> @spelling.sensitive.length and @spelling.insensitive.length
+  isEnabled: -> @spelling.sensitive or @spelling.insensitive
 
   getStatus: -> "Working correctly."
   providesSpelling: (args) -> true
