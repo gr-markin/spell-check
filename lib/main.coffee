@@ -62,6 +62,7 @@ module.exports =
       spellCheckViews[editorId] = {}
       spellCheckViews[editorId]['view'] = spellCheckView
       spellCheckViews[editorId]['active'] = true
+      spellCheckViews[editorId]['editor'] = editor
       @viewsByEditor.set editor, spellCheckView
 
   deactivate: ->
@@ -72,6 +73,12 @@ module.exports =
     @task = null
     @commandSubscription.dispose()
     @commandSubscription = null
+
+    # Clear out the known views.
+    for editorId of spellCheckViews
+      view = spellCheckViews[editorId]
+      view['editor'].destroy()
+    spellCheckViews = {}
 
     # While we have WeakMap.clear, it isn't a function available in ES6. So, we
     # just replace the WeakMap entirely and let the system release the objects.

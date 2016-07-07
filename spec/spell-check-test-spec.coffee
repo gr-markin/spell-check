@@ -215,6 +215,7 @@ describe "Spell check", ->
         getMisspellingMarkers().length > 0
 
       runs ->
+        expect(getMisspellingMarkers().length).toBe 1
         editor.destroy()
         expect(getMisspellingMarkers().length).toBe 0
 
@@ -230,5 +231,6 @@ describe "Spell check", ->
         getMisspellingMarkers().length > 0
 
       runs ->
+        expect(getMisspellingMarkers().length).toBe 1
         editor.destroy()
         expect(getMisspellingMarkers().length).toBe 0
