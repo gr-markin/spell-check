@@ -46,8 +46,9 @@ Below the required methods for the checker instance.
     * If this returns true, then the plugin will be included when looking for incorrect and correct words via the `check` function.
 * check(checkArgs, text: string): [results]
     * This takes the entire text buffer and will be called once per buffer.
-    * The output is an array with two optional parameters: `{ incorrect: [ranges], correct: [ranges] }`
+    * The output is an array with three parameters, all optional: `{ invertIncorrectAsCorrect: true, incorrect: [ranges], correct: [ranges] }`
         * The ranges are a zero-based index of a start and stop character (`[1, 23]`).
+        * `invertIncorrectAsCorrect` means take the incorrect range and assume everything not in this list is correct.
     * Correct words always take precedence, even if another checker indicates a word is incorrect.
     * If a word or character is neither correct or incorrect, it is considered correct.
 * providesSuggestions(checkArgs): boolean

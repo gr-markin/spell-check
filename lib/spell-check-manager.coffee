@@ -99,19 +99,28 @@ class SpellCheckerManager
     incorrects = []
 
     for checker in @checkers
-      console.log "enabled", checker.getId(), checker.isEnabled()
-
       # We only care if this plugin contributes to checking spelling.
       if not checker.isEnabled() or not checker.providesSpelling(args)
         continue
 
-      console.log "checking", checker.getId()
-
       # Get the results which includes positive (correct) and negative (incorrect)
-      # ranges.
+      # ranges. If we have an incorrect range but no correct, everything not
+      # in incorrect is considered correct.
       results = checker.check(args, text)
 
-      if results.correct
+      if results.invertIncorrectAsCorrect and results.incorrect
+        # We need to add the opposite of the incorrect as correct elements in
+        # the list. We do this by creating a subtraction.
+        invertedCorrect = new multirange.MultiRange([[0, text.length]])
+        removeRange = new multirange.MultiRange([])
+        for range in results.incorrect
+          removeRange.appendRange(range.start, range.end)
+        invertedCorrect.subtract(removeRange)
+
+        # Everything in `invertedCorrect` is correct, so add it directly to
+        # the list.
+        correct.append invertedCorrect
+      else if results.correct
         for range in results.correct
           correct.appendRange(range.start, range.end)
 
