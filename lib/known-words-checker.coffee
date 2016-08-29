@@ -44,9 +44,9 @@ class KnownWordsChecker
       []
 
   add: (args, target) ->
-    c = atom.config.get 'spell-check.knownWords'
+    c = atom.config.get 'spell-check-test.knownWords'
     c.push target.word
-    atom.config.set 'spell-check.knownWords', c
+    atom.config.set 'spell-check-test.knownWords', c
 
   setAddKnownWords: (newValue) ->
     @enableAdd = newValue
