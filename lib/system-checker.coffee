@@ -70,15 +70,26 @@ class SystemChecker
         return
 
     # Try the packaged library inside the node_modules. `getDictionaryPath` is
-    # not available, so we have to fake it. This will only work for en-US.
+    # not available, so we have to fake it. This will only work for en-US. We
+    # also duplicate the logic to search in asar archives.
     path = require 'path'
     vendor = path.join __dirname, "..", "node_modules", "spellchecker", "vendor", "hunspell_dictionaries"
+
+    try
+      unpacked = vendor.replace '.asar' + path.sep, '.asar.unpacked' + path.sep
+      fs = require 'fs'
+
+      if fs.statSyncNoException unpacked
+        vendor = unpacked
+    catch
+      null
+
     if @spellchecker.setDictionary @locale, vendor
       return
 
     # If we fell through all the if blocks, then we couldn't load the dictionary.
     @enabled = false
     @reason = "Cannot find dictionary for " + @locale + "."
-    console.log @getId(), "Can't load " + @locale + ": " + @reason
+    console.log @getId(), "Can't load: " + @reason
 
 module.exports = SystemChecker
