@@ -3,18 +3,19 @@ _ = require 'underscore-plus'
 SpellCheckTask = require './spell-check-task'
 
 CorrectionsView = null
+SpellChecker = null
 
 module.exports =
 class SpellCheckView
   @content: ->
-    @div class: 'spell-check'
+    @div class: 'spell-check-test'
 
   constructor: (@editor, @task, @getInstance) ->
     @disposables = new CompositeDisposable
     @initializeMarkerLayer()
     @taskWrapper = new SpellCheckTask @task
 
-    @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check:correct-misspelling', =>
+    @correctMisspellingCommand = atom.commands.add atom.views.getView(@editor), 'spell-check-test:correct-misspelling', =>
       if marker = @markerLayer.findMarkers({containsBufferPosition: @editor.getCursorBufferPosition()})[0]
         CorrectionsView ?= require './corrections-view'
         @correctionsView?.destroy()
@@ -33,7 +34,7 @@ class SpellCheckView
     @disposables.add atom.config.onDidChange 'editor.fontSize', =>
       @subscribeToBuffer()
 
-    @disposables.add atom.config.onDidChange 'spell-check.grammars', =>
+    @disposables.add atom.config.onDidChange 'spell-check-test.grammars', =>
       @subscribeToBuffer()
 
     @subscribeToBuffer()
@@ -44,7 +45,7 @@ class SpellCheckView
     @markerLayer = @editor.addMarkerLayer({maintainHistory: false})
     @markerLayerDecoration = @editor.decorateMarkerLayer(@markerLayer, {
       type: 'highlight',
-      class: 'spell-check-misspelling',
+      class: 'spell-check-test-misspelling',
       deprecatedRegionClass: 'misspelling'
     })
 
@@ -74,7 +75,7 @@ class SpellCheckView
 
   spellCheckCurrentGrammar: ->
     grammar = @editor.getGrammar().scopeName
-    _.contains(atom.config.get('spell-check.grammars'), grammar)
+    _.contains(atom.config.get('spell-check-test.grammars'), grammar)
 
   destroyMarkers: ->
     @markerLayer.destroy()
@@ -82,8 +83,11 @@ class SpellCheckView
     @initializeMarkerLayer()
 
   addMarkers: (misspellings) ->
+    scope_whitelist = atom.config.get('spell-check-test.scopes')
     for misspelling in misspellings
-      @markerLayer.markBufferRange(misspelling, {invalidate: 'touch'})
+      scopes_for_misspelling = @editor.scopeDescriptorForBufferPosition(misspelling[0]).getScopesArray()
+      if scope_whitelist.length is 0 or _.intersection(scopes_for_misspelling, scope_whitelist).length > 0
+        @markerLayer.markBufferRange(misspelling, {invalidate: 'touch'})
 
   updateMisspellings: ->
     # Task::start can throw errors atom/atom#3326
@@ -106,4 +110,4 @@ class SpellCheckView
     # Get the misspelled word and then request corrections.
     instance = @getInstance()
     misspelling = @editor.getTextInBufferRange marker.getBufferRange()
-    instance.suggest args, misspelling
+    corrections = instance.suggest args, misspelling

@@ -1,20 +1,43 @@
 {
-  "name": "spell-check",
-  "version": "0.68.5",
-  "main": "./lib/main",
-  "description": "Highlights misspelled words and shows possible corrections.",
-  "dependencies": {
-    "atom-space-pen-views": "^2.0.0",
-    "multi-integer-range": "^2.0.0",
-    "natural": "^0.4.0",
-    "spellchecker": "3.2.3",
-    "spelling-manager": "0.3.0",
-    "underscore-plus": "^1"
+  "_args": [
+    [
+      {
+        "raw": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+        "spec": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+        "type": "local"
+      },
+      "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/apm-install-dir-117213-31735-yeokwp"
+    ]
+  ],
+  "_from": "../d-117213-31735-459961/package.tgz",
+  "_id": "spell-check-test@0.77.5",
+  "_inCache": true,
+  "_installable": true,
+  "_location": "/spell-check-test",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+    "spec": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+    "type": "local"
   },
-  "repository": "https://github.com/atom/spell-check",
-  "license": "MIT",
-  "engines": {
-    "atom": "*"
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "file:../d-117213-31735-459961/package.tgz",
+  "_shasum": "4cd08b14ddcb9cd420a65f53aad113d07cca657a",
+  "_shrinkwrap": null,
+  "_spec": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/d-117213-31735-459961/package.tgz",
+  "_where": "/private/var/folders/4s/d67nr0qs76v4636_5w9k9pc40000gq/T/apm-install-dir-117213-31735-yeokwp",
+  "bugs": {
+    "url": "https://github.com/dmoonfire/spell-check/issues"
   },
   "configSchema": {
     "grammars": {
@@ -64,10 +87,12 @@
       "default": false,
       "description": "If checked, then the suggestions will include options to add to the known words list above.",
       "order": 6
-    }
-  },
-  "devDependencies": {
-    "coffeelint": "^1.9.7"
+    },
+    "scopes": {
+      "type": "array",
+      "default": [],
+      "description": "List of whitelist scopes you want to be included when checking for misspellings. These scopes must be contained within the activated top-level scopes listed in the 'Grammars' configuration section. _When defined, spell checking will be ignored for any scope not listed._"
+       }
   },
   "consumedServices": {
     "spell-check": {
@@ -75,5 +100,32 @@
         "^1.0.0": "consumeSpellCheckers"
       }
     }
-  }
+  },
+  "dependencies": {
+    "atom-space-pen-views": "^2.0.0",
+    "multi-integer-range": "^2.0.0",
+    "natural": "^0.4.0",
+    "spellchecker": "3.2.3",
+    "spelling-manager": "0.3.0",
+    "underscore-plus": "^1"
+  },
+  "description": "Highlights misspelled words and shows possible corrections.",
+  "devDependencies": {
+    "coffeelint": "^1.9.7"
+  },
+  "engines": {
+    "atom": "*"
+  },
+  "homepage": "https://github.com/dmoonfire/spell-check#readme",
+  "license": "MIT",
+  "main": "./lib/main",
+  "name": "spell-check-test",
+  "optionalDependencies": {},
+  "readme": "# Spell Check package\n[![OS X Build Status](https://travis-ci.org/atom/spell-check.svg?branch=master)](https://travis-ci.org/atom/spell-check) [![Windows Build Status](https://ci.appveyor.com/api/projects/status/1620a5reqw6kdolv/branch/master?svg=true)](https://ci.appveyor.com/project/Atom/spell-check/branch/master) [![Dependency Status](https://david-dm.org/atom/spell-check.svg)](https://david-dm.org/atom/spell-check)\n\n**This is a test package. Disable the built-in `spell-check` module before using it.**\n\nHighlights misspelling in Atom and shows possible corrections.\n\nUse <kbd>cmd-shift-:</kbd> to bring up the list of corrections when your cursor is on a misspelled word.\n\nBy default spell check is enabled for the following files:\n\n* Plain Text\n* GitHub Markdown\n* Git Commit Message\n* AsciiDoc\n\nYou can override this from the _Spell Check_ settings in the Settings View (<kbd>cmd-,</kbd>). The Grammars config option is a list of scopes for which the package will check for spelling errors.\n\nTo enable _Spell Check_ for your current file type: put your cursor in the file, open the [Command Palette](https://github.com/atom/command-palette)\n(<kbd>cmd-shift-p</kbd>), and run the `Editor: Log Cursor Scope` command. This will trigger a notification which will contain a list of scopes. The first scope that's listed is the one you should add to the list of scopes in the settings for the _Spell Check_ package. Here are some examples: `source.coffee`, `text.plain`, `text.html.basic`.\n\n## Changing the dictionary\n\nTo change the language of the dictionary, set the \"Locales\" configuration option to the IEFT tag (en-US, fr-FR, etc). More than one language can be used, simply separate them by commas.\n\nFor Windows 8 and 10, you must install the language using the regional settings before the language can be chosen inside Atom.\n\n## Plugins\n\n_Spell Check_ allows for plugins to provide additional spell checking functionality. See the `PLUGINS.md` file in the repository on how to write a plugin.\n",
+  "readmeFilename": "README.md",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dmoonfire/spell-check.git"
+  },
+  "version": "0.77.5"
 }
